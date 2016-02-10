@@ -1,0 +1,13 @@
+binutils-*/
+hexos.iso
+hexos.bin
+build-*/
+gcc-*/
+grub/
+objconv/
+
+*.o
+
+*.iso
+isodir
+sysroot
