@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <multiboot.h>
+
 #include <kernel/mem.h>
 #include <kernel/panic.h>
 
@@ -11,11 +13,15 @@
 #include <kernel/vga.h>
 #include <kernel/ps2keyboard.h>
 
-void kernel_early(void)
+void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 {
 	terminal_initialize();
 
-	if (!mem_init()) {
+	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
+		panic("HexOS requires a Multiboot compliant bootloader.");
+	}
+
+	if (!mem_init(mb_info)) {
 		panic("Failed to load memory manager");
 	}
 }

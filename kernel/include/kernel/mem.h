@@ -15,6 +15,13 @@ typedef struct block_header {
 	bool is_free;
 } block_header;
 
+typedef struct multiboot_memory_map {
+	unsigned int size;
+	unsigned int base_addr_low,base_addr_high;
+	unsigned int length_low,length_high;
+	unsigned int type;
+} multiboot_memory_map_t;
+
 bool mem_init();
 void * hex_malloc(size_t size);
 

@@ -25,6 +25,10 @@ stack_top:
 _start:
 	movl $stack_top, %esp
 
+	# multiboot info
+	pushl   %ebx # pointer to the info struct
+	pushl   %eax # magic value
+
 	# Initialize the core kernel before running the global constructors.
 	call kernel_early
 
