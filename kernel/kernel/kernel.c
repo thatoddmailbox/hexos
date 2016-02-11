@@ -6,6 +6,8 @@
 
 #include <multiboot.h>
 
+#include <kernel/idt.h>
+
 #include <kernel/mem.h>
 #include <kernel/panic.h>
 
@@ -33,6 +35,8 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 
 	cpu_brand_name();
 
+	idt_install();
+
 	dbgprint("Starting HexOS...\n");
 }
 
@@ -51,9 +55,14 @@ void kernel_main(void)
 
 	printf("hexhexhex\n");
 
+	int a = 3 /0;
+	a++;
+
+
 	char * test = hex_malloc(11);
 	test[0] = 'a';
-	test[1] = '\0';
+	test[1] = a;
+	test[2] = '\0';
 
 	char * test2 = hex_malloc(11);
 	test2[0] = 'b';
