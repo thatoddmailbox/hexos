@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include <multiboot.h>
 
@@ -24,11 +25,15 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	if (!mem_init(mb_info)) {
 		panic("Failed to load memory manager");
 	}
+
+	serial_init();
+	dbgprint("Starting HexOS...\n");
 }
 
 void kernel_main(void)
 {
 	printf("Welcome to HexOS\n");
+	dbgprint("Welcome to HexOS\n");
 
 	terminal_setcolor(COLOR_GREEN);
 	printf("    _   _            ___  ____   \n");
@@ -48,12 +53,19 @@ void kernel_main(void)
 	test2[0] = 'b';
 	test2[1] = '\0';
 
+	char input = ' ';
+	char lastChar = ' ';
 	while (1) {
-		char in = getchar();
-		//printf("%c", in);
-		for (int i; i < 999999999; i++) {
-			// this is my sleep()
-			// for now
+		while (serial_received()) {
+			input = serial_read();
+			serial_write(input);
+			printf("%c", input);
+		}
+		input = getchar();
+		if (input != lastChar) {
+			serial_write(input);
+			printf("%c", input);
+			lastChar = input;
 		}
 	}
 }
