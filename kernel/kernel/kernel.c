@@ -19,8 +19,12 @@
 #include <kernel/vga.h>
 #include <kernel/ps2keyboard.h>
 
+bool asdf = false;
+
 void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 {
+	gdt_install();
+
 	terminal_initialize();
 
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
@@ -35,7 +39,13 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 
 	cpu_brand_name();
 
+	char thing[33] = {0};
+	itoa(0xdeadbeef, thing, 16);
+	dbgprint(thing);
+	dbgprint("\n");
+
 	idt_install();
+	isrs_install();
 
 	dbgprint("Starting HexOS...\n");
 }
@@ -55,14 +65,15 @@ void kernel_main(void)
 
 	printf("hexhexhex\n");
 
-	int a = 3 /0;
-	a++;
+	dbgprint("interrupt 1\n");
 
+	dbgprint(3/0);
+
+	dbgprint("yay we survived\n");
 
 	char * test = hex_malloc(11);
 	test[0] = 'a';
-	test[1] = a;
-	test[2] = '\0';
+	test[1] = '\0';
 
 	char * test2 = hex_malloc(11);
 	test2[0] = 'b';

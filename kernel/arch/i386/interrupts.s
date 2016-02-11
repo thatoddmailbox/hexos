@@ -35,14 +35,14 @@
 
 .macro isr_noerror number
     cli
-    push $0
-    push \number
+    pushl $0
+    pushl \number
     jmp isr_common_stub
 .endm
 
 .macro isr_error number
     cli
-    push \number
+    pushl \number
     jmp isr_common_stub
 .endm
 
@@ -150,29 +150,33 @@ isr32:
 # that 'fault_handler' exists in another file
 .extern fault_handler
 
+.intel_syntax noprefix
 # This is our common ISR stub. It saves the processor state, sets
 # up for kernel mode segments, calls the C-level fault handler,
 # and finally restores the stack frame.
 isr_common_stub:
     pusha
-    push %ds
-    push %es
-    push %fs
-    push %gs
-    mov $0x10, %ax   # Load the Kernel Data Segment descriptor!
-    mov %ax, %ds
-    mov %ax, %es
-    mov %ax, %fs
-    mov %ax, %gs
-    mov %esp, %eax   # Push us the stack
-    push %eax
-    mov fault_handler, %eax
-    call %eax       # A special call, preserves the 'eip' register
-    pop %eax
-    pop %gs
-    pop %fs
-    pop %es
-    pop %ds
+    push ds
+    push es
+    push fs
+    push gs
+    mov ax, 0x10   # Load the Kernel Data Segment descriptor!
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov eax, esp   # Push us the stack
+    push eax
+    #mov eax, fault_handler
+    #call eax       # A special call, preserves the 'eip' register
+    call fault_handler
+    pop eax
+    pop gs
+    pop fs
+    pop es
+    pop ds
     popa
-    add %esp, 8     # Cleans up the pushed error code and pushed ISR number
+    add esp, 8     # Cleans up the pushed error code and pushed ISR number
     iret           # pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
+
+.att_syntax
