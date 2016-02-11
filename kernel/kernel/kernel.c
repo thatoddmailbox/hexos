@@ -13,26 +13,13 @@
 #include <kernel/panic.h>
 
 #include <kernel/cpuid.h>
+#include <kernel/timer.h>
 
 #include <kernel/io.h>
 #include <kernel/tty.h>
 
 #include <kernel/vga.h>
 #include <kernel/ps2keyboard.h>
-
-bool asdf = false;
-
-volatile unsigned int timer_ticks = 0;
-void timer_wait(int ticks)
-{
-    unsigned int eticks;
-
-    eticks = timer_ticks + ticks;
-    while(timer_ticks < eticks)
-    {
-        __asm__ __volatile__ ("sti//hlt//cli");
-    }
-}
 
 void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 {
@@ -61,6 +48,8 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	// and enable interrupts!
 	__asm__ __volatile__ ("sti");
 
+    timer_install(); // install timer
+
 	keyboard_install();
 
 	dbgprint("Starting HexOS...\n");
@@ -71,7 +60,7 @@ void kernel_main(void)
 	printf("Welcome to HexOS\n");
 	dbgprint("Welcome to HexOS\n");
 
-	//beep();
+    //beep();
 
 	terminal_setcolor(COLOR_GREEN);
 	printf("    _   _            ___  ____   \n");

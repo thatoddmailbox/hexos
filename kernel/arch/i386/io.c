@@ -68,33 +68,3 @@ void dbgprint(const char* data) {
 	for ( size_t i = 0; i < strlen(data); i++ )
 		serial_write((int) ((const unsigned char*) data)[i]);
 }
-
-
-/* This will keep track of how many ticks that the system
-*  has been running for */
-int other_timer_ticks = 0;
-
-/* Handles the timer. In this case, it's very simple: We
-*  increment the 'timer_ticks' variable every time the
-*  timer fires. By default, the timer fires 18.222 times
-*  per second. */
-void timer_handler(struct regs *r)
-{
-    /* Increment our 'tick count' */
-    other_timer_ticks++;
-
-    /* Every 18 clocks (approximately 1 second), we will
-    *  display a message on the screen */
-    if (other_timer_ticks % 18 == 0)
-    {
-        printf("One second has passed\n");
-    }
-}
-
-/* Sets up the system clock by installing the timer handler
-*  into IRQ0 */
-void timer_install()
-{
-    /* Installs 'timer_handler' to IRQ0 */
-    irq_install_handler(0, timer_handler);
-}

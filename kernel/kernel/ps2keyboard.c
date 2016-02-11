@@ -61,15 +61,16 @@ void keyboard_handler(struct regs *r)
         /* You can use this one to see if the user released the
         *  shift, alt, or control keys... */
         // key released
-        char binary_val[9] = {0};
-        itoa(scancode, binary_val, 2);
-        dbgprint(binary_val);
-        dbgprint("\n");
     }
     else
     {
         if (scancode_map[scancode] == '\b') {
             terminal_deletechar(); // backspace
+        } else if (scancode_map[scancode] == 0) {
+            char binary_val[9] = {0};
+            itoa(scancode, binary_val, 2);
+            dbgprint(binary_val);
+            dbgprint("\n");
         } else {
             /* Here, a key was just pressed. Please note that if you
             *  hold a key down, you will get repeated key press

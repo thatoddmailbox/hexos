@@ -269,7 +269,7 @@ irq_common_stub:
     mov gs, ax
     mov eax, esp
     push eax
-    #mov eax, irq_handler
+    #mov irq_handler, eax
     #call eax
     call irq_handler
     pop eax

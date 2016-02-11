@@ -1,6 +1,8 @@
 #include <stdint.h>
 
-static void play_sound(uint32_t nFrequence) {
+#include <kernel/timer.h>
+
+void play_sound(uint32_t nFrequence) {
 	uint32_t Div;
 	uint8_t tmp;
 
@@ -17,7 +19,7 @@ static void play_sound(uint32_t nFrequence) {
 	}
 }
 
-static void stop_sound() {
+void stop_sound() {
 	uint8_t tmp = inb(0x61) & 0xFC;
 
 	outb(0x61, tmp);
@@ -25,7 +27,7 @@ static void stop_sound() {
 
 void beep() {
 	play_sound(1000);
-	timer_wait(1);
+	sleep(1);
 	stop_sound();
 	//set_PIT_2(old_frequency);
 }

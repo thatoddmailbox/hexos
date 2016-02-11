@@ -33,6 +33,7 @@ kernel/ps2keyboard.o \
 kernel/mem.o \
 kernel/panic.o \
 kernel/sound.o \
+kernel/timer.o \
 
 CRTI_OBJ:=$(ARCHDIR)/crti.o
 CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=crtbegin.o)
