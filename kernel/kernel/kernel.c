@@ -44,8 +44,12 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	dbgprint(thing);
 	dbgprint("\n");
 
-	idt_install();
-	isrs_install();
+	idt_install(); // set up the table
+	isrs_install(); // set up the isrs
+	irq_install(); // set up the irqs
+
+	// and enable interrupts!
+	__asm__ __volatile__ ("sti");
 
 	dbgprint("Starting HexOS...\n");
 }
@@ -64,12 +68,6 @@ void kernel_main(void)
 	terminal_setcolor(COLOR_WHITE);
 
 	printf("hexhexhex\n");
-
-	dbgprint("interrupt 1\n");
-
-	dbgprint(3/0);
-
-	dbgprint("yay we survived\n");
 
 	char * test = hex_malloc(11);
 	test[0] = 'a';

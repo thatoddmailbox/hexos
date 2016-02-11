@@ -33,6 +33,23 @@
 .globl isr30
 .globl isr31
 
+.globl irq0
+.globl irq1
+.globl irq2
+.globl irq3
+.globl irq4
+.globl irq5
+.globl irq6
+.globl irq7
+.globl irq8
+.globl irq9
+.globl irq10
+.globl irq11
+.globl irq12
+.globl irq13
+.globl irq14
+.globl irq15
+
 .macro isr_noerror number
     cli
     pushl $0
@@ -44,6 +61,13 @@
     cli
     pushl \number
     jmp isr_common_stub
+.endm
+
+.macro irq_noerror number
+    cli
+    pushl $0
+    pushl \number
+    jmp irq_common_stub
 .endm
 
 isr0:
@@ -143,8 +167,54 @@ isr30:
 isr31:
     isr_noerror $31
 
-isr32:
-    isr_noerror $32
+# IRQs
+irq0:
+    irq_noerror $32
+
+irq1:
+    irq_noerror $33
+
+irq2:
+    irq_noerror $34
+
+irq3:
+    irq_noerror $35
+
+irq4:
+    irq_noerror $36
+
+irq5:
+    irq_noerror $37
+
+irq6:
+    irq_noerror $38
+
+irq7:
+    irq_noerror $39
+
+irq8:
+    irq_noerror $40
+
+irq9:
+    irq_noerror $41
+
+irq10:
+    irq_noerror $42
+
+irq11:
+    irq_noerror $43
+
+irq12:
+    irq_noerror $44
+
+irq13:
+    irq_noerror $45
+
+irq14:
+    irq_noerror $46
+
+irq15:
+    irq_noerror $47
 
 # We call a C function in here. We need to let the assembler know
 # that 'fault_handler' exists in another file
@@ -179,4 +249,35 @@ isr_common_stub:
     add esp, 8     # Cleans up the pushed error code and pushed ISR number
     iret           # pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
 
+.att_syntax
+
+.extern irq_handler
+
+.intel_syntax noprefix
+# This is a stub that we have created for IRQ based ISRs. This calls
+# '_irq_handler' in our C code. We need to create this in an 'irq.c'
+irq_common_stub:
+    pusha
+    push ds
+    push es
+    push fs
+    push gs
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov eax, esp
+    push eax
+    #mov eax, irq_handler
+    #call eax
+    call irq_handler
+    pop eax
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    popa
+    add esp, 8
+    iret
 .att_syntax
