@@ -73,3 +73,15 @@ void terminal_writestring(const char* data)
 {
 	terminal_write(data, strlen(data));
 }
+
+void terminal_deletechar()
+{
+	terminal_column--;
+
+	if (terminal_column < 0) {
+		terminal_row--;
+		terminal_column = VGA_WIDTH - 1;
+	}
+
+	terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+}

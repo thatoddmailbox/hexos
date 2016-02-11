@@ -72,7 +72,7 @@ void dbgprint(const char* data) {
 
 /* This will keep track of how many ticks that the system
 *  has been running for */
-int timer_ticks = 0;
+int other_timer_ticks = 0;
 
 /* Handles the timer. In this case, it's very simple: We
 *  increment the 'timer_ticks' variable every time the
@@ -81,11 +81,11 @@ int timer_ticks = 0;
 void timer_handler(struct regs *r)
 {
     /* Increment our 'tick count' */
-    timer_ticks++;
+    other_timer_ticks++;
 
     /* Every 18 clocks (approximately 1 second), we will
     *  display a message on the screen */
-    if (timer_ticks % 18 == 0)
+    if (other_timer_ticks % 18 == 0)
     {
         printf("One second has passed\n");
     }

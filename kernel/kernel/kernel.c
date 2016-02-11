@@ -22,6 +22,18 @@
 
 bool asdf = false;
 
+volatile unsigned int timer_ticks = 0;
+void timer_wait(int ticks)
+{
+    unsigned int eticks;
+
+    eticks = timer_ticks + ticks;
+    while(timer_ticks < eticks)
+    {
+        __asm__ __volatile__ ("sti//hlt//cli");
+    }
+}
+
 void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 {
 	gdt_install();
@@ -58,6 +70,8 @@ void kernel_main(void)
 {
 	printf("Welcome to HexOS\n");
 	dbgprint("Welcome to HexOS\n");
+
+	//beep();
 
 	terminal_setcolor(COLOR_GREEN);
 	printf("    _   _            ___  ____   \n");
