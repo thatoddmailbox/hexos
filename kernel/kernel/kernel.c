@@ -37,14 +37,11 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	}
 
 	serial_init();
+	printf("Serial debug output ready!\n");
 
 	cpu_brand_name();
 
-	char thing[33] = {0};
-	itoa(0xdeadbeef, thing, 16);
-	dbgprint(thing);
-	dbgprint("\n");
-
+	printf("Setting up interrupts...\n");
 	idt_install(); // set up the table
 	isrs_install(); // set up the isrs
 	irq_install(); // set up the irqs
@@ -52,7 +49,7 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	// and enable interrupts!
 	__asm__ __volatile__ ("sti");
 
-	timer_install();
+	keyboard_install();
 
 	dbgprint("Starting HexOS...\n");
 }
@@ -87,12 +84,6 @@ void kernel_main(void)
 			input = serial_read();
 			serial_write(input);
 			printf("%c", input);
-		}
-		input = getchar();
-		if (input != lastChar) {
-			serial_write(input);
-			printf("%c", input);
-			lastChar = input;
 		}
 	}
 }
