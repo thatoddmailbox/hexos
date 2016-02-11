@@ -7,6 +7,7 @@
 #include <multiboot.h>
 
 #include <kernel/idt.h>
+#include <kernel/isr.h>
 
 #include <kernel/mem.h>
 #include <kernel/panic.h>
@@ -50,6 +51,8 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 
 	// and enable interrupts!
 	__asm__ __volatile__ ("sti");
+
+	timer_install();
 
 	dbgprint("Starting HexOS...\n");
 }
