@@ -3,4 +3,6 @@
 
 #include <stddef.h>
 
+void cpu_brand_name();
+
 #endif

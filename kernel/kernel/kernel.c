@@ -9,8 +9,11 @@
 #include <kernel/mem.h>
 #include <kernel/panic.h>
 
+#include <kernel/cpuid.h>
+
 #include <kernel/io.h>
 #include <kernel/tty.h>
+
 #include <kernel/vga.h>
 #include <kernel/ps2keyboard.h>
 
@@ -27,6 +30,9 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	}
 
 	serial_init();
+
+	cpu_brand_name();
+
 	dbgprint("Starting HexOS...\n");
 }
 
