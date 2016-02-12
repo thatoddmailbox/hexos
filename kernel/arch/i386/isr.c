@@ -135,6 +135,9 @@ unsigned char *exception_messages[] =
 // This function handles all interrupts.
 void fault_handler(struct regs *r)
 {
+    dbgprint("interrupt: ");
+    dbgprint(r->int_no);
+    dbgprint("\n");
     // Is this a fault whose number is from 0 to 31?
     if (r->int_no < 32)
     {

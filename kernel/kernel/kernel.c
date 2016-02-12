@@ -32,16 +32,20 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
 		panic("HexOS requires a Multiboot compliant bootloader.");
 	}
-
+	
 	if (!mem_init(mb_info)) {
 		panic("Failed to load memory manager");
 	}
 
+	pci_install(); // pci stuff
+
 	serial_init();
+	dbgprint("Hello!\n");
 	printf("Serial debug output ready!\n");
 
 	cpu_brand_name();
 
+	dbgprint("Setting up interrupts...\n");
 	printf("Setting up interrupts...\n");
 	idt_install(); // set up the table
 	isrs_install(); // set up the isrs
@@ -56,7 +60,6 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 
 	keyboard_install(); // keyboard setup
 
-	pci_install(); // pci stuff
 
 	dbgprint("Starting HexOS...\n");
 }
@@ -83,6 +86,10 @@ void kernel_main(void)
 	char * test2 = hex_malloc(11);
 	test2[0] = 'b';
 	test2[1] = '\0';*/
+
+	/*uint32_t *ptr = (uint32_t*)0xA0000000;
+    uint32_t do_page_fault = *ptr;
+	do_page_fault = 42;*/
 
 	char input = ' ';
 	char lastChar = ' ';
