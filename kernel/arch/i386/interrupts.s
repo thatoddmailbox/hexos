@@ -251,6 +251,16 @@ isr_common_stub:
 
 .att_syntax
 
+.global enable_interrupts
+enable_interrupts:
+    sti
+    ret
+
+.global disable_interrupts
+disable_interrupts:
+    cli
+    ret
+
 .extern irq_handler
 
 .intel_syntax noprefix

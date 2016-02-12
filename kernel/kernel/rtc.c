@@ -51,7 +51,8 @@ void rtc_write(uint16_t addr, uint8_t val) {
 }
 
 bool rtc_update_in_progress() {
-
+	outb_slow(RTC_ADDRESS_PORT, 0x0A);
+	return (inb_slow(RTC_DATA_PORT) & 0x80);
 }
 
 uint8_t rtc_bcd_convert(uint8_t bcd) {

@@ -34,7 +34,9 @@ kernel/mem.o \
 kernel/panic.o \
 kernel/io/ata.o \
 kernel/io/pci.o \
+kernel/rtc.o \
 kernel/sound.o \
+kernel/time.o \
 kernel/timer.o \
 
 CRTI_OBJ:=$(ARCHDIR)/crti.o

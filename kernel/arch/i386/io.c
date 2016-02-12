@@ -30,10 +30,20 @@ uint32_t inl(uint16_t port) {
 }
 
 void io_wait(void) {
-    // Port 0x80 is used for 'checkpoints' during POST.
-    // The Linux kernel seems to think it is free for use :-/
-    asm volatile ( "outb %%al, $0x80" : : "a"(0) );
-    // %%al instead of %0 makes no difference.  TODO: does the register need to be zeroed?
+    outb(0x80, 0);
+}
+
+// slow versions
+// they iowait()
+uint8_t inb_slow(uint16_t port) {
+    uint8_t ret = inb(port);
+    io_wait();
+    return ret;
+}
+
+void outb_slow(uint16_t port, uint8_t val) {
+    outb(port, val);
+    io_wait();
 }
 
 // serial port stuff

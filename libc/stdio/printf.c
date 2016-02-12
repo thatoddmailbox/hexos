@@ -3,14 +3,37 @@
 #include <stdio.h>
 #include <string.h>
 
-static void print(const char* data, size_t data_length)
-{
+void print(const char* data, size_t data_length) {
 	for ( size_t i = 0; i < data_length; i++ )
 		putchar((int) ((const unsigned char*) data)[i]);
 }
 
-int printf(const char* restrict format, ...)
-{
+void printf_int(int i) {
+	if (i < 0) { // if it's negative
+		putchar('-'); // put a negative sign
+		i *= -1; // and make it positive
+	}
+
+	// this code is modified from basekernel, which is under the GPL
+	// see https://github.com/dthain/basekernel/blob/6fff9df12906787b16ba94d685c3ec5bf28eb1eb/src/string.c
+	int f, d;
+	f = 1;
+	while((i/f)>0) {
+		f *= 10;
+	}
+	f = f/10;
+	if (f == 0) {
+		f=1;
+	}
+	while (f>0) {
+		d = i/f;
+		putchar('0'+d);
+		i = i-d*f;
+		f = f/10;
+	}
+}
+
+int printf(const char* restrict format, ...) {
 	va_list parameters;
 	va_start(parameters, format);
 
@@ -56,6 +79,12 @@ int printf(const char* restrict format, ...)
 			format++;
 			const char* s = va_arg(parameters, const char*);
 			print(s, strlen(s));
+		}
+		else if ( *format == 'd' )
+		{
+			format++;
+			int s = va_arg(parameters, int);
+			printf_int(s);
 		}
 		else
 		{

@@ -11,6 +11,18 @@
 #define MEM_START_MAGIC 0xdeadbeef
 #define MEM_END_MAGIC 0xfeebdaed
 
+#define PAGE_SIZE 4096
+#define ENTRIES_PER_TABLE (PAGE_SIZE/4)
+
+#define PAGE_FLAG_USER        0
+#define PAGE_FLAG_KERNEL      1
+#define PAGE_FLAG_EXISTS      0
+#define PAGE_FLAG_ALLOC       2
+#define PAGE_FLAG_READONLY    0
+#define PAGE_FLAG_READWRITE   4
+#define PAGE_FLAG_NOCLEAR     0
+#define PAGE_FLAG_CLEAR       8
+
 typedef struct block_header {
 	int start_magic; // to verify page
 	int size;

@@ -7,6 +7,7 @@
 #include <multiboot.h>
 
 #include <kernel/idt.h>
+#include <kernel/interrupts.h>
 #include <kernel/isr.h>
 
 #include <kernel/mem.h>
@@ -19,6 +20,8 @@
 #include <kernel/tty.h>
 
 #include <kernel/io/pci.h>
+
+#include <kernel/rtc.h>
 
 #include <kernel/vga.h>
 #include <kernel/ps2keyboard.h>
@@ -52,13 +55,15 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 	irq_install(); // set up the irqs
 
 	// and enable interrupts!
-	__asm__ __volatile__ ("sti");
+	enable_interrupts();
 
 	outb(0x70, inb(0x70)&0x7F); // enable non-maskable interrupts
 
 	timer_install(); // install timer
 
 	keyboard_install(); // keyboard setup
+
+	rtc_init(); // rtc setup
 
 	dbgprint("Starting HexOS...\n");
 }
