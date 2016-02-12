@@ -18,6 +18,8 @@
 #include <kernel/io.h>
 #include <kernel/tty.h>
 
+#include <kernel/io/pci.h>
+
 #include <kernel/vga.h>
 #include <kernel/ps2keyboard.h>
 
@@ -52,7 +54,9 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 
     timer_install(); // install timer
 
-	keyboard_install();
+	keyboard_install(); // keyboard setup
+
+	pci_install(); // pci stuff
 
 	dbgprint("Starting HexOS...\n");
 }

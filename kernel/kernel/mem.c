@@ -55,7 +55,7 @@ bool mem_init(multiboot_info_t * mb_info) {
 }
 
 void * hex_malloc(size_t size) {
-	printf("hexy_hello\n");
+	//printf("hexy_hello\n");
 	block_header * check = (block_header *) mem_start; // start here
 	while (1) {
  		if (check->magic != MEM_MAGIC) {

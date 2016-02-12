@@ -28,4 +28,11 @@ title-text: "HexOS"
 + label { text="hex" font="aqui 11" color="#8FF" }
 EOF
 
+cat > isodir/test.txt << EOF
+Hello!
+This is a file used to verify that HexOS can read files!
+yay!
+:D
+EOF
+
 grub-mkrescue -o hexos.iso isodir

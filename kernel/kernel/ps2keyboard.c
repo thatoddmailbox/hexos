@@ -103,10 +103,10 @@ void keyboard_handler(struct regs *r)
     if (scancode & 0x80)
     {
         // key released
-        char binary_val[9] = {0};
+        /*char binary_val[9] = {0};
         itoa(scancode ^ 0x80, binary_val, 2);
         dbgprint(binary_val);
-        dbgprint("\n");
+        dbgprint("\n");*/
         if ((scancode ^ 0x80) == 42 || (scancode ^ 0x80) == 54) {
             shift_down = false;
         }
@@ -119,10 +119,10 @@ void keyboard_handler(struct regs *r)
             if (scancode == 42 || scancode == 54) {
                 shift_down = true;
             } else {
-                char binary_val[9] = {0};
+                /*char binary_val[9] = {0};
                 itoa(scancode, binary_val, 2);
                 dbgprint(binary_val);
-                dbgprint("\n");
+                dbgprint("\n");*/
             }
         } else {
             char pressed = scancode_map[scancode];

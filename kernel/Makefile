@@ -32,6 +32,8 @@ kernel/kernel.o \
 kernel/ps2keyboard.o \
 kernel/mem.o \
 kernel/panic.o \
+kernel/io/ata.o \
+kernel/io/pci.o \
 kernel/sound.o \
 kernel/timer.o \
 
