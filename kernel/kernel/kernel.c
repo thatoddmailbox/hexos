@@ -76,15 +76,13 @@ void kernel_main(void)
 	printf("   |_| |_|\\___/_/\\_\\___/|____/  \n");
 	terminal_setcolor(COLOR_WHITE);
 
-	printf("hexhexhex\n");
-
-	char * test = hex_malloc(11);
+	/*char * test = hex_malloc(11);
 	test[0] = 'a';
 	test[1] = '\0';
 
 	char * test2 = hex_malloc(11);
 	test2[0] = 'b';
-	test2[1] = '\0';
+	test2[1] = '\0';*/
 
 	char input = ' ';
 	char lastChar = ' ';
