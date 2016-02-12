@@ -48,6 +48,30 @@ bool mem_check_avail(multiboot_info_t * mb_info) {
 	return true;
 }
 
+void * hex_malloc(size_t size) {
+	//printf("hexy_hello\n");
+	block_header * check = (block_header *) mem_start; // start here
+	while (1) {
+		if (check->start_magic != MEM_START_MAGIC) {
+			// TODO: check if we have space
+			printf("no block here, making one\n");
+			check->start_magic = MEM_START_MAGIC;
+			check->next_page = mem_start + sizeof(block_header) + size;
+			check->size = size;
+			check->is_free = false;
+			check->end_magic = MEM_END_MAGIC;
+			return (void *) check + sizeof(block_header);
+		}
+		if (check->is_free) {
+			// it's free!
+			printf("found free block\n");
+			return (void *) check + sizeof(block_header);
+		}
+		printf("trying next block\n");
+		check = check + check->size + sizeof(block_header); // go to the next one
+	}
+}
+
 bool mem_init(multiboot_info_t * mb_info) {
 	if (!mem_check_avail(mb_info)) {
 		return false;

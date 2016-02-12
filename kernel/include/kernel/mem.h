@@ -8,14 +8,16 @@
 
 #include <kernel/idt.h>
 
-#define MEM_MAGIC 0xdeadbeef
+#define MEM_START_MAGIC 0xdeadbeef
+#define MEM_END_MAGIC 0xfeebdaed
 
 typedef struct block_header {
-	int magic;
-	void * next_page;
+	int start_magic; // to verify page
 	int size;
 	bool is_free;
-} block_header;
+	void * next_page; // linked list
+	int end_magic; // so we can merge nearby blocks
+} __attribute__((packed)) block_header;
 
 typedef struct multiboot_memory_map {
 	unsigned int size;
@@ -27,6 +29,8 @@ typedef struct multiboot_memory_map {
 // these are defined in boot.s
 extern void load_page_directory(unsigned int*);
 extern void enable_paging();
+
+void * malloc(size_t size);
 
 bool mem_init();
 

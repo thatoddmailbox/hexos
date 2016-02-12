@@ -78,17 +78,13 @@ void kernel_main(void)
 	printf("   |_| |_|\\___/_/\\_\\___/|____/  \n");
 	terminal_setcolor(COLOR_WHITE);
 
-	/*char * test = hex_malloc(11);
+	char * test = hex_malloc(11);
 	test[0] = 'a';
 	test[1] = '\0';
 
 	char * test2 = hex_malloc(11);
 	test2[0] = 'b';
-	test2[1] = '\0';*/
-
-	uint32_t *ptr = (uint32_t*)0xA0000000;
-    uint32_t do_page_fault = *ptr;
-	do_page_fault = 42;
+	test2[1] = '\0';
 
 	char input = ' ';
 	char lastChar = ' ';
