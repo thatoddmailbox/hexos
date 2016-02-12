@@ -52,7 +52,7 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 
 	outb(0x70, inb(0x70)&0x7F); // enable non-maskable interrupts
 
-    timer_install(); // install timer
+	timer_install(); // install timer
 
 	keyboard_install(); // keyboard setup
 
@@ -66,7 +66,7 @@ void kernel_main(void)
 	printf("Welcome to HexOS\n");
 	dbgprint("Welcome to HexOS\n");
 
-    //beep();
+	//beep();
 
 	terminal_setcolor(COLOR_GREEN);
 	printf("    _   _            ___  ____   \n");
