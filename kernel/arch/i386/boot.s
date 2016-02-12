@@ -25,6 +25,7 @@ stack_top:
 _start:
 	movl $stack_top, %esp
 
+	pushl	%esp # stack start location
 	# multiboot info
 	pushl   %ebx # pointer to the info struct
 	pushl   %eax # magic value
@@ -43,6 +44,28 @@ _start:
 .Lhang:
 	hlt
 	jmp .Lhang
+
+# TODO: put them somewhere more specific than boot.s
+.globl load_page_directory
+load_page_directory:
+	push %ebp
+	mov %esp, %ebp
+	mov 8(%esp), %eax
+	mov %eax, %cr3
+	mov %ebp, %esp
+	pop %ebp
+	ret
+
+.globl enable_paging
+enable_paging:
+	push %ebp
+	mov %esp, %ebp
+	mov %cr0, %eax
+	or $0x80000000, %eax
+	mov %eax, %cr0
+	mov %ebp, %esp
+	pop %ebp
+	ret
 
 .global gdt_flush
 .extern gp
@@ -75,6 +98,5 @@ flush2:
 idt_load:
     lidt [idtp]
     ret
-
 
 .size _start, . - _start

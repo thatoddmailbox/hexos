@@ -24,6 +24,10 @@ typedef struct multiboot_memory_map {
 	unsigned int type;
 } multiboot_memory_map_t;
 
+// these are defined in boot.s
+extern void load_page_directory(unsigned int*);
+extern void enable_paging();
+
 bool mem_init();
 
 #endif

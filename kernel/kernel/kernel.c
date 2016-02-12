@@ -23,7 +23,7 @@
 #include <kernel/vga.h>
 #include <kernel/ps2keyboard.h>
 
-void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
+void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initial_stack)
 {
 	gdt_install();
 
@@ -32,7 +32,7 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
 		panic("HexOS requires a Multiboot compliant bootloader.");
 	}
-	
+
 	if (!mem_init(mb_info)) {
 		panic("Failed to load memory manager");
 	}
@@ -60,7 +60,6 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 
 	keyboard_install(); // keyboard setup
 
-
 	dbgprint("Starting HexOS...\n");
 }
 
@@ -87,9 +86,9 @@ void kernel_main(void)
 	test2[0] = 'b';
 	test2[1] = '\0';*/
 
-	/*uint32_t *ptr = (uint32_t*)0xA0000000;
+	uint32_t *ptr = (uint32_t*)0xA0000000;
     uint32_t do_page_fault = *ptr;
-	do_page_fault = 42;*/
+	do_page_fault = 42;
 
 	char input = ' ';
 	char lastChar = ' ';
