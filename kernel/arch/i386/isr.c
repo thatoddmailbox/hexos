@@ -1,7 +1,9 @@
 #include <kernel/idt.h>
 #include <kernel/io.h>
 
+#include <kernel/tty.h>
 #include <kernel/panic.h>
+#include <kernel/vga.h>
 
 /* These are function prototypes for all of the exception
 *  handlers: The first 32 entries in the IDT are reserved
@@ -130,20 +132,28 @@ unsigned char *exception_messages[] =
     "Reserved"
 };
 
-/* All of our Exception handling Interrupt Service Routines will
-*  point to this function. This will tell us what exception has
-*  happened! Right now, we simply halt the system by hitting an
-*  endless loop. All ISRs disable interrupts while they are being
-*  serviced as a 'locking' mechanism to prevent an IRQ from
-*  happening and messing up kernel data structures */
+// This function handles all interrupts.
 void fault_handler(struct regs *r)
 {
-    /* Is this a fault whose number is from 0 to 31? */
+    // Is this a fault whose number is from 0 to 31?
     if (r->int_no < 32)
     {
-        /* Display the description for the Exception that occurred.
-        *  In this tutorial, we will simply halt the system using an
-        *  infinite loop */
+        if (r->int_no == 2) {
+            // it's an NMI. oh noes
+            // we shouldn't do much other than text, to avoid triggering the faulty hardware again
+
+            terminal_initialize(); // clear terminal
+            terminal_setcolor(COLOR_RED); // set it to a spooky color
+
+            // show scary message for scary error
+            terminal_writestring("*** NON-MASKABLE INTERRUPT OCCURRED ***\n\n");
+
+            terminal_writestring("To protect your computer and data, HexOS has stopped.\n\n");
+
+            terminal_writestring("A critical non-recoverable and non-maskable hardware interrupt has occurred. This may mean that your computer's hardware is defective. If this error occurs multiple times, try isolating the problem by removing and/or replacing components.");
+            while (1) {}
+        }
+        // Display the description for the Exception that occurred.
         panic(exception_messages[r->int_no]);
         for (;;);
     }

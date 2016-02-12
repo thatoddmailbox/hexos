@@ -48,6 +48,8 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info)
 	// and enable interrupts!
 	__asm__ __volatile__ ("sti");
 
+	outb(0x70, inb(0x70)&0x7F); // enable non-maskable interrupts
+
     timer_install(); // install timer
 
 	keyboard_install();
