@@ -1,4 +1,6 @@
 #include <stddef.h>
+
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
@@ -46,6 +48,48 @@ unsigned char scancode_map[128] =
     0,	/* All other keys are undefined */
 };
 
+unsigned char shift_map[128] =
+{
+    0,  27, '!', '@', '#', '$', '%', '^', '&', '*',	/* 9 */
+  '(', ')', '_', '+', '\b',	/* Backspace */
+  '\t',			/* Tab */
+  'Q', 'W', 'E', 'R',	/* 19 */
+  'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',	/* Enter key */
+    0,			/* 29   - Control */
+  'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',	/* 39 */
+ '"', '~',   0,		/* Left shift */
+ '|', 'Z', 'X', 'C', 'V', 'B', 'N',			/* 49 */
+  'M', '<', '>', '?',   0,				/* Right shift */
+  '*',
+    0,	/* Alt */
+  ' ',	/* Space bar */
+    0,	/* Caps lock */
+    0,	/* 59 - F1 key ... > */
+    0,   0,   0,   0,   0,   0,   0,   0,
+    0,	/* < ... F10 */
+    0,	/* 69 - Num lock*/
+    0,	/* Scroll Lock */
+    0,	/* Home key */
+    0,	/* Up Arrow */
+    0,	/* Page Up */
+  '-',
+    0,	/* Left Arrow */
+    0,
+    0,	/* Right Arrow */
+  '+',
+    0,	/* 79 - End key*/
+    0,	/* Down Arrow */
+    0,	/* Page Down */
+    0,	/* Insert Key */
+    0,	/* Delete Key */
+    0,   0,   0,
+    0,	/* F11 Key */
+    0,	/* F12 Key */
+    0,	/* All other keys are undefined */
+};
+
+bool shift_down = false;
+
 /* Handles the keyboard interrupt */
 void keyboard_handler(struct regs *r)
 {
@@ -58,33 +102,36 @@ void keyboard_handler(struct regs *r)
     *  set, that means that a key has just been released */
     if (scancode & 0x80)
     {
-        /* You can use this one to see if the user released the
-        *  shift, alt, or control keys... */
         // key released
+        char binary_val[9] = {0};
+        itoa(scancode ^ 0x80, binary_val, 2);
+        dbgprint(binary_val);
+        dbgprint("\n");
+        if ((scancode ^ 0x80) == 42 || (scancode ^ 0x80) == 54) {
+            shift_down = false;
+        }
     }
     else
     {
         if (scancode_map[scancode] == '\b') {
             terminal_deletechar(); // backspace
         } else if (scancode_map[scancode] == 0) {
-            char binary_val[9] = {0};
-            itoa(scancode, binary_val, 2);
-            dbgprint(binary_val);
-            dbgprint("\n");
+            if (scancode == 42 || scancode == 54) {
+                shift_down = true;
+            } else {
+                char binary_val[9] = {0};
+                itoa(scancode, binary_val, 2);
+                dbgprint(binary_val);
+                dbgprint("\n");
+            }
         } else {
-            /* Here, a key was just pressed. Please note that if you
-            *  hold a key down, you will get repeated key press
-            *  interrupts. */
+            char pressed = scancode_map[scancode];
+            if (shift_down) {
+                pressed = shift_map[scancode];
+            }
 
-            /* Just to show you how this works, we simply translate
-            *  the keyboard scancode into an ASCII value, and then
-            *  display it to the screen. You can get creative and
-            *  use some flags to see if a shift is pressed and use a
-            *  different layout, or you can add another 128 entries
-            *  to the above layout to correspond to 'shift' being
-            *  held. If shift is held using the larger lookup table,
-            *  you would add 128 to the scancode when you look for it */
-            printf("%c", scancode_map[scancode]);
+            // TODO: make this go somewhere more useful
+            printf("%c", pressed);
         }
     }
 }
