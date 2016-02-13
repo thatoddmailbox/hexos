@@ -122,13 +122,12 @@ void kernel_main(void)
 	test2[0] = 'b';
 	test2[1] = '\0';*/
 
-	void * buffer = memory_alloc_page(2048*5);
-	printf("atapi_read: %d\n", atapi_read(2, buffer, 5, 0x10));
+	/*printf("atapi_read: %d\n", atapi_read(2, buffer, 5, 0x10));
 	printf("%s\n", (char*) buffer);
 
 	printf("hex: %s\n", (char*) (buffer+702));
 
-	printf("hex: %s\n", (char*) (buffer+2048));
+	printf("hex: %s\n", (char*) (buffer+2048));*/
 
 	// TODO: make this less hardcoded
 	// TODO: actually free memory and stuff
@@ -136,7 +135,10 @@ void kernel_main(void)
 	metadata.ata_number = 2;
 
 	block_device cdrom;
-	cdrom.metadata = metadata;
+	cdrom.read_block = atapi_block_read;
+	cdrom.metadata = &metadata;
+
+	iso9660_init_volume(&cdrom);
 
 	char input = ' ';
 	char lastChar = ' ';
