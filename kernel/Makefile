@@ -30,7 +30,9 @@ OBJS:=\
 $(KERNEL_ARCH_OBJS) \
 kernel/kernel.o \
 kernel/ps2keyboard.o \
+kernel/clock.o \
 kernel/mem.o \
+kernel/mutex.o \
 kernel/list.o \
 kernel/io/ata.o \
 kernel/io/pci.o \

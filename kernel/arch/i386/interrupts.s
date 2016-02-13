@@ -265,6 +265,7 @@ disable_interrupts:
 wait_interrupts:
     sti
     hlt
+    ret
 
 .extern irq_handler
 

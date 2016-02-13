@@ -32,6 +32,8 @@ _start:
 	pushl   %ebx # pointer to the info struct
 	pushl   %eax # magic value
 
+	mov	$5*8, %ax
+
 	# Initialize the core kernel before running the global constructors.
 	call kernel_early
 

@@ -29,6 +29,16 @@ uint32_t inl(uint16_t port) {
     return ret;
 }
 
+uint16_t inw(int port) {
+	uint16_t result;
+	asm("inw %w1, %w0" : "=a" (result) : "Nd" (port) );
+	return result;
+}
+
+void outw(uint16_t value, int port) {
+	asm("outw %w0, %w1" : : "a" (value), "Nd" (port) );
+}
+
 void io_wait(void) {
     outb(0x80, 0);
 }

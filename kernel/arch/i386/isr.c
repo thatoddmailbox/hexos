@@ -1,9 +1,14 @@
 #include <kernel/idt.h>
+#include <kernel/interrupts.h>
 #include <kernel/io.h>
+
+#include <kernel/process.h>
 
 #include <kernel/tty.h>
 #include <kernel/panic.h>
 #include <kernel/vga.h>
+
+static interrupt_handler_t interrupt_handlers[32];
 
 /* These are function prototypes for all of the exception
 *  handlers: The first 32 entries in the IDT are reserved
@@ -41,15 +46,9 @@ extern void isr29();
 extern void isr30();
 extern void isr31();
 
-/* This is a very repetitive function... it's not hard, it's
-*  just annoying. As you can see, we set the first 32 entries
-*  in the IDT to the first 32 ISRs. We can't use a for loop
-*  for this, because there is no way to get the function names
-*  that correspond to that given entry. We set the access
-*  flags to 0x8E. This means that the entry is present, is
+/* Set the access flags to 0x8E. This means that the entry is present, is
 *  running in ring 0 (kernel level), and has the lower 5 bits
-*  set to the required '14', which is represented by 'E' in
-*  hex. */
+*  set to the required '14', which is represented by 'E' in hex. */
 void isrs_install()
 {
     idt_set_gate(0, (unsigned)isr0, 0x08, 0x8E);
@@ -93,7 +92,7 @@ void isrs_install()
 *  corresponds to each and every exception. We get the correct
 *  message by accessing like:
 *  exception_message[interrupt_number] */
-unsigned char *exception_messages[] =
+const char *exception_messages[] =
 {
     "Division By Zero",
     "Debug",
@@ -132,31 +131,45 @@ unsigned char *exception_messages[] =
     "Reserved"
 };
 
+void interrupt_register(int i, interrupt_handler_t handler)
+{
+    interrupt_handlers[i] = handler;
+}
+
 // This function handles all interrupts.
 void fault_handler(struct regs *r)
 {
     dbgprint("interrupt!\n");
+    if (interrupt_handlers[r->int_no] != 0) {
+        (interrupt_handlers[r->int_no]) (r->int_no, r->int_no); // not sure what the second param is for...
+        return;
+    }
+    // unhandled!
     // Is this a fault whose number is from 0 to 31?
     if (r->int_no < 32)
     {
-        if (r->int_no == 2) {
-            // it's an NMI. oh noes
-            // we shouldn't do much other than text, to avoid triggering the faulty hardware again
+        if (!current) {
+            if (r->int_no == 2) {
+                // it's an NMI. oh noes
+                // we shouldn't do much other than text, to avoid triggering the faulty hardware again
 
-            terminal_initialize(); // clear terminal
-            terminal_setcolor(COLOR_RED); // set it to a spooky color
+                terminal_initialize(); // clear terminal
+                terminal_setcolor(COLOR_RED); // set it to a spooky color
 
-            // show scary message for scary error
-            terminal_writestring("*** NON-MASKABLE INTERRUPT OCCURRED ***\n\n");
+                // show scary message for scary error
+                terminal_writestring("*** NON-MASKABLE INTERRUPT OCCURRED ***\n\n");
 
-            terminal_writestring("To protect your computer and data, HexOS has stopped.\n\n");
+                terminal_writestring("To protect your computer and data, HexOS has stopped.\n\n");
 
-            terminal_writestring("A critical non-recoverable and non-maskable hardware interrupt has occurred. This may mean that your computer's hardware is defective. If this error occurs multiple times, try isolating the problem by removing and/or replacing components.");
-            while (1) {}
+                terminal_writestring("A critical non-recoverable and non-maskable hardware interrupt has occurred. This may mean that your computer's hardware is defective. If this error occurs multiple times, try isolating the problem by removing and/or replacing components.");
+                while (1) {}
+            }
+            // Display the description for the Exception that occurred.
+            panic(exception_messages[r->int_no]);
+            for (;;);
+        } else {
+            process_exit(-1); // kill the process
         }
-        // Display the description for the Exception that occurred.
-        panic(exception_messages[r->int_no]);
-        for (;;);
     }
 }
 
@@ -233,6 +246,70 @@ void irq_install()
     idt_set_gate(45, (unsigned)irq13, 0x08, 0x8E);
     idt_set_gate(46, (unsigned)irq14, 0x08, 0x8E);
     idt_set_gate(47, (unsigned)irq15, 0x08, 0x8E);
+}
+
+#define PIC_ICW1 0x11
+#define PIC_ICW4_MASTER 0x01
+#define PIC_ICW4_SLAVE  0x05
+#define PIC_ACK_SPECIFIC 0x60
+
+static uint8_t pic_control[2] = { 0x20, 0xa0 };
+static uint8_t pic_data[2]    = { 0x21, 0xa1 };
+
+void pic_init( int pic0base, int pic1base )
+{
+    outb(PIC_ICW1,pic_control[0]);
+    outb(pic0base,pic_data[0]);
+    outb(1<<2,pic_data[0]);
+    outb(PIC_ICW4_MASTER,pic_data[0]);
+    outb(~(1<<2),pic_data[0]);
+
+    outb(PIC_ICW1,pic_control[1]);
+    outb(pic1base,pic_data[1]);
+    outb(2,pic_data[1]);
+    outb(PIC_ICW4_SLAVE,pic_data[1]);
+    outb(~0,pic_data[1]);
+
+    printf("pic: ready\n");
+}
+
+void irq_enable(uint8_t irq)
+{
+    uint8_t mask;
+    if(irq<8) {
+        mask = inb(pic_data[0]);
+        mask = mask&~(1<<irq);
+        outb(mask,pic_data[0]);
+    } else {
+        mask = inb(pic_data[1]);
+        mask = mask&~(1<<irq);
+        outb(mask,pic_data[1]);
+        irq_enable(2);
+    }
+}
+
+void pic_disable( uint8_t irq )
+{
+    uint8_t mask;
+    if(irq<8) {
+        mask = inb(pic_data[0]);
+        mask = mask|(1<<irq);
+        outb(mask,pic_data[0]);
+    } else {
+        mask = inb(pic_data[1]);
+        mask = mask|(1<<irq);
+        outb(mask,pic_data[1]);
+    }
+}
+
+void pic_acknowledge( uint8_t irq )
+{
+    if(irq>=8) {
+        outb(PIC_ACK_SPECIFIC+(irq-8),pic_control[1]);
+        outb(PIC_ACK_SPECIFIC+(2),pic_control[0]);
+    } else {
+        outb(PIC_ACK_SPECIFIC+irq,pic_control[0]);
+    }
 }
 
 /* Each of the IRQ ISRs point to this function, rather than

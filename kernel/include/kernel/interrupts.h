@@ -9,4 +9,6 @@ extern void *interrupt_stack_pointer;
 
 extern void intr_return();
 
+typedef void (*interrupt_handler_t) ( int intr, int code );
+
 #endif

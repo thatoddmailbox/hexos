@@ -6,6 +6,8 @@
 
 #include <multiboot.h>
 
+#include <kernel/clock.h>
+
 #include <kernel/idt.h>
 #include <kernel/interrupts.h>
 #include <kernel/isr.h>
@@ -19,6 +21,7 @@
 #include <kernel/io.h>
 #include <kernel/tty.h>
 
+#include <kernel/io/ata.h>
 #include <kernel/io/pci.h>
 
 #include <kernel/process.h>
@@ -65,6 +68,8 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 	isrs_install(); // set up the isrs
 	irq_install(); // set up the irqs
 
+	pic_init();
+
 	// and enable interrupts!
 	enable_interrupts();
 
@@ -75,8 +80,11 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 	keyboard_install(); // keyboard setup
 
 	rtc_init(); // rtc setup
+	clock_init();
 
 	process_init();
+
+	ata_init();
 
 	dbgprint("Starting HexOS...\n");
 }
