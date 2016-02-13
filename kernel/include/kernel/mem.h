@@ -25,14 +25,6 @@
 
 #define ALLOC_MEMORY_START  0x100000
 
-typedef struct block_header {
-	int start_magic; // to verify page
-	int size;
-	bool is_free;
-	void * next_page; // linked list
-	int end_magic; // so we can merge nearby blocks
-} __attribute__((packed)) block_header;
-
 typedef struct multiboot_memory_map {
 	uint32_t size;
 	uint64_t base_addr;
@@ -40,12 +32,22 @@ typedef struct multiboot_memory_map {
 	uint32_t type;
 } __attribute__((packed)) multiboot_memory_map_t;
 
-// these are defined in boot.s
-extern void load_page_directory(unsigned int*);
-extern void enable_paging();
-
 void * malloc(size_t size);
 
 bool mem_init();
+
+void * memory_alloc_page( bool zeroit );
+void memory_free_page( void *addr );
+
+struct pagetable * pagetable_create();
+void pagetable_init( struct pagetable *p );
+int  pagetable_map( struct pagetable *p, unsigned vaddr, unsigned paddr, int flags );
+int  pagetable_getmap( struct pagetable *p, unsigned vaddr, unsigned *paddr );
+void pagetable_unmap( struct pagetable *p, unsigned vaddr );
+void pagetable_alloc( struct pagetable *p, unsigned vaddr, unsigned length, int flags );
+void pagetable_delete( struct pagetable *p );
+struct pagetable * pagetable_load( struct pagetable *p );
+void pagetable_enable();
+void pagetable_refresh();
 
 #endif
