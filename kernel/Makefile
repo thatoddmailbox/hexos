@@ -31,9 +31,11 @@ $(KERNEL_ARCH_OBJS) \
 kernel/kernel.o \
 kernel/ps2keyboard.o \
 kernel/mem.o \
-kernel/panic.o \
+kernel/list.o \
 kernel/io/ata.o \
 kernel/io/pci.o \
+kernel/panic.o \
+kernel/process.o \
 kernel/rtc.o \
 kernel/sound.o \
 kernel/time.o \

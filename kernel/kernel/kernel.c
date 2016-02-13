@@ -21,6 +21,8 @@
 
 #include <kernel/io/pci.h>
 
+#include <kernel/process.h>
+
 #include <kernel/rtc.h>
 
 #include <kernel/vga.h>
@@ -73,6 +75,8 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 	keyboard_install(); // keyboard setup
 
 	rtc_init(); // rtc setup
+
+	process_init();
 
 	dbgprint("Starting HexOS...\n");
 }

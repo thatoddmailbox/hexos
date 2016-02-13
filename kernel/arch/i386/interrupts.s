@@ -261,6 +261,11 @@ disable_interrupts:
     cli
     ret
 
+.global wait_interrupts
+wait_interrupts:
+    sti
+    hlt
+
 .extern irq_handler
 
 .intel_syntax noprefix
