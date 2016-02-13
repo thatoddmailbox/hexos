@@ -258,17 +258,17 @@ static uint8_t pic_data[2]    = { 0x21, 0xa1 };
 
 void pic_init( int pic0base, int pic1base )
 {
-    outb(PIC_ICW1,pic_control[0]);
-    outb(pic0base,pic_data[0]);
-    outb(1<<2,pic_data[0]);
-    outb(PIC_ICW4_MASTER,pic_data[0]);
-    outb(~(1<<2),pic_data[0]);
+    outb(pic_control[0], PIC_ICW1);
+    outb(pic_data[0], pic0base);
+    outb(pic_data[0], 1<<2);
+    outb(pic_data[0], PIC_ICW4_MASTER);
+    outb(pic_data[0], ~(1<<2));
 
-    outb(PIC_ICW1,pic_control[1]);
-    outb(pic1base,pic_data[1]);
-    outb(2,pic_data[1]);
-    outb(PIC_ICW4_SLAVE,pic_data[1]);
-    outb(~0,pic_data[1]);
+    outb(pic_control[1], PIC_ICW1);
+    outb(pic_data[1], pic1base);
+    outb(pic_data[1], 2);
+    outb(pic_data[1], PIC_ICW4_SLAVE);
+    outb(pic_data[1], ~0);
 
     printf("pic: ready\n");
 }
@@ -279,36 +279,35 @@ void irq_enable(uint8_t irq)
     if(irq<8) {
         mask = inb(pic_data[0]);
         mask = mask&~(1<<irq);
-        outb(mask,pic_data[0]);
+        outb(pic_data[0], mask);
     } else {
         mask = inb(pic_data[1]);
         mask = mask&~(1<<irq);
-        outb(mask,pic_data[1]);
+        outb(pic_data[1], mask);
         irq_enable(2);
     }
 }
 
-void pic_disable( uint8_t irq )
-{
+void pic_disable(uint8_t irq) {
     uint8_t mask;
     if(irq<8) {
         mask = inb(pic_data[0]);
         mask = mask|(1<<irq);
-        outb(mask,pic_data[0]);
+        outb(pic_data[0], mask);
     } else {
         mask = inb(pic_data[1]);
         mask = mask|(1<<irq);
-        outb(mask,pic_data[1]);
+        outb(pic_data[1], mask);
     }
 }
 
 void pic_acknowledge( uint8_t irq )
 {
     if(irq>=8) {
-        outb(PIC_ACK_SPECIFIC+(irq-8),pic_control[1]);
-        outb(PIC_ACK_SPECIFIC+(2),pic_control[0]);
+        outb(pic_control[1], PIC_ACK_SPECIFIC+(irq-8));
+        outb(pic_control[0], PIC_ACK_SPECIFIC+(2));
     } else {
-        outb(PIC_ACK_SPECIFIC+irq,pic_control[0]);
+        outb(pic_control[0], PIC_ACK_SPECIFIC+irq);
     }
 }
 
@@ -324,6 +323,10 @@ void pic_acknowledge( uint8_t irq )
 *  an EOI, you won't raise any more IRQs */
 void irq_handler(struct regs *r)
 {
+    if (r->int_no != 32 && r->int_no != 33) {
+        dbgprint("irq!\n");
+        printf("%d", r->int_no);
+    }
     /* This is a blank function pointer */
     void (*handler)(struct regs *r);
 

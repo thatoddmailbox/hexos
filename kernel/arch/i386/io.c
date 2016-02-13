@@ -35,7 +35,7 @@ uint16_t inw(int port) {
 	return result;
 }
 
-void outw(uint16_t value, int port) {
+void outw(int port, uint16_t value) {
 	asm("outw %w0, %w1" : : "a" (value), "Nd" (port) );
 }
 

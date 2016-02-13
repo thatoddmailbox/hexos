@@ -80,6 +80,14 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 	keyboard_install(); // keyboard setup
 
 	rtc_init(); // rtc setup
+
+	pic_init(32,40);
+
+	for(int i=0;i<16;i++) {
+		pic_disable(i);
+		pic_acknowledge(i);
+	}
+
 	clock_init();
 
 	process_init();

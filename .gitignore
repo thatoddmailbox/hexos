@@ -11,3 +11,5 @@ objconv/
 *.iso
 isodir
 sysroot
+
+hdd.img

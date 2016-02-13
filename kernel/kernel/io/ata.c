@@ -87,9 +87,9 @@ static void ata_interrupt(int intr, int code) {
 }
 
 void ata_reset(int id) {
-	outb(ATA_CONTROL_RESET,ata_base[id]+ATA_CONTROL);
+	outb(ata_base[id]+ATA_CONTROL, ATA_CONTROL_RESET);
 	clock_wait(1);
-	outb(0,ata_base[id]+ATA_CONTROL);
+	outb(ata_base[id]+ATA_CONTROL, 0);
 	clock_wait(1);
 }
 
@@ -131,7 +131,7 @@ static void ata_pio_read(int id, void *buffer, int size) {
 static void ata_pio_write(int id, const void *buffer, int size) {
 	uint16_t *wbuffer = (uint16_t*)buffer;
 	while (size > 0) {
-		outw(*wbuffer,ata_base[id]+ATA_DATA);
+		outw(ata_base[id]+ATA_DATA, *wbuffer);
 		wbuffer++;
 		size-=2;
 	}
@@ -157,7 +157,7 @@ static int ata_begin(int id, int command, int nblocks, int offset) {
 	if(!ata_wait(id,ATA_STATUS_BSY,0)) return 0;
 
 	// get the attention of the proper disk
-	outb(flags,base+ATA_FDH);
+	outb(base+ATA_FDH, flags);
 
 	// wait again for the disk to indicate ready
 	// special case: ATAPI identification does not raise RDY flag
@@ -172,15 +172,15 @@ static int ata_begin(int id, int command, int nblocks, int offset) {
 	if(!ready) return 0;
 
 	// send the arguments
-	outb(0,base+ATA_CONTROL);
-	outb(nblocks,base+ATA_COUNT);
-	outb(sector,base+ATA_SECTOR);
-	outb(clow,base+ATA_CYL_LO);
-	outb(chigh,base+ATA_CYL_HI);
-	outb(flags,base+ATA_FDH);
+	outb(base+ATA_CONTROL, 0);
+	outb(base+ATA_COUNT, nblocks);
+	outb(base+ATA_SECTOR, sector);
+	outb(base+ATA_CYL_LO, clow);
+	outb(base+ATA_CYL_HI, chigh);
+	outb(base+ATA_FDH, flags);
 
 	// execute the command
-	outb(command,base+ATA_COMMAND);
+	outb(base+ATA_COMMAND, command);
 
 	return 1;
 }
@@ -221,20 +221,20 @@ static int atapi_begin(int id, void *data, int length) {
 	if(!ata_wait(id,ATA_STATUS_BSY,0)) return 0;
 
 	// get the attention of the proper disk
-	outb(flags,base+ATA_FDH);
+	outb(base+ATA_FDH, flags);
 
 	// wait again for the disk to indicate ready
 	if(!ata_wait(id,ATA_STATUS_BSY,0)) return 0;
 
 	// send the arguments
-	outb(0,base+ATAPI_FEATURE);
-	outb(0,base+ATAPI_IRR);
-	outb(0,base+ATAPI_SAMTAG);
-	outb(length&0xff,base+ATAPI_COUNT_LO);
-	outb(length>>8,base+ATAPI_COUNT_HI);
+	outb(base+ATAPI_FEATURE, 0);
+	outb(base+ATAPI_IRR, 0);
+	outb(base+ATAPI_SAMTAG, 0);
+	outb(base+ATAPI_COUNT_LO, length&0xff);
+	outb(base+ATAPI_COUNT_HI, length>>8);
 
 	// execute the command
-	outb(ATAPI_COMMAND_PACKET,base+ATA_COMMAND);
+	outb(base+ATA_COMMAND, ATAPI_COMMAND_PACKET);
 
 	// wait for ready
 	if(!ata_wait(id,ATA_STATUS_BSY|ATA_STATUS_DRQ,ATA_STATUS_DRQ));
