@@ -33,6 +33,25 @@ void printf_int(int i) {
 	}
 }
 
+// printf_hexdigit and printf_hex are modified from basekernel, which is under the GPL
+// see https://github.com/dthain/basekernel/blob/6fff9df12906787b16ba94d685c3ec5bf28eb1eb/src/string.c
+void printf_hexdigit(unsigned char i)
+{
+	if(i<10) {
+		putchar('0'+i);
+	} else {
+		putchar('a'+i-10);
+	}
+}
+
+void printf_hex(unsigned int i)
+{
+	int j;
+	for(j=28;j>=0;j=j-4) {
+		printf_hexdigit((i>>j)&0x0f);
+	}
+}
+
 int printf(const char* restrict format, ...) {
 	va_list parameters;
 	va_start(parameters, format);
@@ -85,6 +104,12 @@ int printf(const char* restrict format, ...) {
 			format++;
 			int s = va_arg(parameters, int);
 			printf_int(s);
+		}
+		else if ( *format == 'x' )
+		{
+			format++;
+			unsigned int s = va_arg(parameters, unsigned int);
+			printf_hex(s);
 		}
 		else
 		{

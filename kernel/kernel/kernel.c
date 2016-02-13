@@ -36,20 +36,29 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 		panic("HexOS requires a Multiboot compliant bootloader.");
 	}
 
+	printf("cmdline = %s\n", mb_info->cmdline);
+
 	if (!mem_init(mb_info)) {
 		panic("Failed to load memory manager");
 	}
 
 	pci_install(); // pci stuff
 
-	serial_init();
+	// TODO: write a strcmp() and a proper args parser
+	if (((char*)mb_info->cmdline)[0] == '-' &&
+		((char*)mb_info->cmdline)[1] == 's' &&
+		((char*)mb_info->cmdline)[2] == 'e' &&
+		((char*)mb_info->cmdline)[3] == 'r' &&
+		((char*)mb_info->cmdline)[4] == 'd' &&
+		((char*)mb_info->cmdline)[5] == 'b' &&
+		((char*)mb_info->cmdline)[6] == 'g') {
+		serial_init(); // enable serial if the right option selected
+	}
 	dbgprint("Hello!\n");
-	printf("Serial debug output ready!\n");
 
 	cpu_brand_name();
 
 	dbgprint("Setting up interrupts...\n");
-	printf("Setting up interrupts...\n");
 	idt_install(); // set up the table
 	isrs_install(); // set up the isrs
 	irq_install(); // set up the irqs
@@ -83,13 +92,13 @@ void kernel_main(void)
 	printf("   |_| |_|\\___/_/\\_\\___/|____/  \n");
 	terminal_setcolor(COLOR_WHITE);
 
-	char * test = hex_malloc(11);
+	/*char * test = hex_malloc(11);
 	test[0] = 'a';
 	test[1] = '\0';
 
 	char * test2 = hex_malloc(11);
 	test2[0] = 'b';
-	test2[1] = '\0';
+	test2[1] = '\0';*/
 
 	char input = ' ';
 	char lastChar = ' ';

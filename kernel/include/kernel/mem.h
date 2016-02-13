@@ -23,6 +23,8 @@
 #define PAGE_FLAG_NOCLEAR     0
 #define PAGE_FLAG_CLEAR       8
 
+#define ALLOC_MEMORY_START  0x100000
+
 typedef struct block_header {
 	int start_magic; // to verify page
 	int size;
@@ -32,11 +34,11 @@ typedef struct block_header {
 } __attribute__((packed)) block_header;
 
 typedef struct multiboot_memory_map {
-	unsigned int size;
-	unsigned int base_addr_low,base_addr_high;
-	unsigned int length_low,length_high;
-	unsigned int type;
-} multiboot_memory_map_t;
+	uint32_t size;
+	uint64_t base_addr;
+	uint64_t length;
+	uint32_t type;
+} __attribute__((packed)) multiboot_memory_map_t;
 
 // these are defined in boot.s
 extern void load_page_directory(unsigned int*);
