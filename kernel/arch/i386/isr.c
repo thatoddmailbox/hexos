@@ -323,10 +323,6 @@ void pic_acknowledge( uint8_t irq )
 *  an EOI, you won't raise any more IRQs */
 void irq_handler(struct regs *r)
 {
-    if (r->int_no != 32 && r->int_no != 33) {
-        dbgprint("irq!\n");
-        printf("%d", r->int_no);
-    }
     /* This is a blank function pointer */
     void (*handler)(struct regs *r);
 

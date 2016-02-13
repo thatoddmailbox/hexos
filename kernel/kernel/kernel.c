@@ -6,6 +6,8 @@
 
 #include <multiboot.h>
 
+#include <kernel/blockdevice.h>
+
 #include <kernel/clock.h>
 
 #include <kernel/idt.h>
@@ -119,6 +121,22 @@ void kernel_main(void)
 	char * test2 = hex_malloc(11);
 	test2[0] = 'b';
 	test2[1] = '\0';*/
+
+	void * buffer = memory_alloc_page(2048*5);
+	printf("atapi_read: %d\n", atapi_read(2, buffer, 5, 0x10));
+	printf("%s\n", (char*) buffer);
+
+	printf("hex: %s\n", (char*) (buffer+702));
+
+	printf("hex: %s\n", (char*) (buffer+2048));
+
+	// TODO: make this less hardcoded
+	// TODO: actually free memory and stuff
+	ata_metadata metadata;
+	metadata.ata_number = 2;
+
+	block_device cdrom;
+	cdrom.metadata = metadata;
 
 	char input = ' ';
 	char lastChar = ' ';
