@@ -6,7 +6,7 @@
 void iso9660_init_volume(block_device * dev) {
 	// TODO: free memory and stuff
 	void * buffer = kalloc(&main_heap, 2048);
-	((read_block_t)dev->read_block)(dev, buffer, 1, ISO9600_OFFSET);
+	((read_block_t)dev->read_block)(dev, buffer, 1, ISO9660_OFFSET);
 	iso9660_primary_volume_descriptor_t * vol_desc = (iso9660_primary_volume_descriptor_t *) buffer;
 	printf("iso9660: volume identifier: %s\n", vol_desc->volume_identifier);
 
@@ -39,6 +39,6 @@ void iso9660_init_volume(block_device * dev) {
 		i++;
 	}
 
-	//iso9660_path_table_entry_t * entry2 = buffer2 + ISO9600_PATH_TABLE_OFFSET;
+	//iso9660_path_table_entry_t * entry2 = buffer2 + ISO9660_PATH_TABLE_OFFSET;
 	//printf("iso9660: iden: %s\n", entry->directory_identifier);
 }
