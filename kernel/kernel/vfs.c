@@ -2,8 +2,8 @@
 #include <kernel/vfs.h>
 #include <string.h>
 
-fs_node_t * fs_root;
-fs_node_t * fs_mnt;
+fs_node_t fs_root;
+fs_node_t fs_mnt;
 
 uint32_t read_fs(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
 	// Has the node got a read callback?
@@ -37,7 +37,7 @@ void close_fs(fs_node_t *node) {
 	}
 }
 
-struct dirent *readdir_fs(fs_node_t *node, uint32_t index) {
+dirent *readdir_fs(fs_node_t *node, uint32_t index) {
 	if ((node->flags&0x7) == FS_DIRECTORY && node->readdir != 0) {
 		return node->readdir(node, index);
 	} else {
@@ -55,21 +55,44 @@ fs_node_t *finddir_fs(fs_node_t *node, char *name) {
 
 dirent dirent_resp;
 
-dirent * root_readdir(struct fs_node* node, uint32_t num) {
-	if (node == fs_root && num == 0) {
-		strcpy(dirent_resp.name, "mnt");
-		dirent_resp.name[3] = 0;
-		dirent_resp.ino = 0;
-		return &dirent_resp;
+dirent * root_readdir(fs_node_t* node, uint32_t num) {
+	if (node == &fs_root) {
+		if (num == 0) {
+			strcpy(dirent_resp.d_name, "mnt");
+			dirent_resp.d_name[3] = 0;
+			dirent_resp.d_ino = 0;
+			return &dirent_resp;
+		}
+	} else if (node == &fs_mnt) {
+		if (num == 0) {
+			strcpy(dirent_resp.d_name, "cdrom");
+			dirent_resp.d_name[6] = 0;
+			dirent_resp.d_ino = 0;
+			return &dirent_resp;
+		}
 	}
 	return 0;
 	//return &dirent_resp;
 }
 
-void vfs_init() {
-	strcpy(fs_mnt->name, "mnt");
-	fs_mnt->flags = FS_DIRECTORY;
+fs_node_t * root_finddir(fs_node_t * node, char * name) {
+	if (node == &fs_root) {
+		if (!strcmp(name, "mnt")) {
+			return &fs_mnt;
+		}
+	}
+	return 0;
+}
 
-	fs_root->flags = FS_DIRECTORY;
-	fs_root->readdir = root_readdir;
+void vfs_init() {
+	strcpy(fs_mnt.name, "mnt");
+	fs_mnt.flags = FS_DIRECTORY;
+	fs_mnt.parent = &fs_root;
+	fs_mnt.readdir = &root_readdir;
+	fs_mnt.finddir = &root_finddir;
+
+	fs_root.flags = FS_DIRECTORY;
+	fs_root.readdir = &root_readdir;
+	fs_root.finddir = &root_finddir;
+	fs_root.parent = 0;
 }
