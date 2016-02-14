@@ -32,6 +32,7 @@ kernel/kernel.o \
 kernel/ps2keyboard.o \
 kernel/blockdevice.o \
 kernel/clock.o \
+kernel/heap.o \
 kernel/mem.o \
 kernel/mutex.o \
 kernel/list.o \
@@ -41,9 +42,11 @@ kernel/io/pci.o \
 kernel/panic.o \
 kernel/process.o \
 kernel/rtc.o \
+kernel/shell.o \
 kernel/sound.o \
 kernel/time.o \
 kernel/timer.o \
+kernel/vfs.o \
 
 CRTI_OBJ:=$(ARCHDIR)/crti.o
 CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=crtbegin.o)

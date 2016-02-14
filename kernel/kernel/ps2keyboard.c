@@ -113,9 +113,9 @@ void keyboard_handler(struct regs *r)
     }
     else
     {
-        if (scancode_map[scancode] == '\b') {
+        /*if (scancode_map[scancode] == '\b') {
             terminal_deletechar(); // backspace
-        } else if (scancode_map[scancode] == 0) {
+        } else */if (scancode_map[scancode] == 0) {
             if (scancode == 42 || scancode == 54) {
                 shift_down = true;
             } else {
@@ -131,7 +131,8 @@ void keyboard_handler(struct regs *r)
             }
 
             // TODO: make this go somewhere more useful
-            printf("%c", pressed);
+            //printf("%c", pressed);
+            shell_putchar(pressed);
         }
     }
 }
@@ -139,4 +140,5 @@ void keyboard_handler(struct regs *r)
 void keyboard_install() {
 	// set up the handler on irq1
 	irq_install_handler(1, keyboard_handler);
+    irq_enable(1);
 }

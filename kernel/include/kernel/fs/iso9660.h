@@ -1,8 +1,9 @@
 #ifndef _KERNEL_ISO9660_H
 #define _KERNEL_ISO9660_H
 
-#define ISO9600_MAIN_OFFSET 0x10
-#define ISO9600_PATH_TABLE_OFFSET 10
+#include <kernel/vfs.h>
+
+#define ISO9600_OFFSET 0x10
 
 #define ISO9600_BOOT_RECORD 0
 #define ISO9600_PRIMARY_VOLUME 1
@@ -22,7 +23,7 @@ typedef struct {
 	uint8_t length_of_directory_identifier;
 	uint8_t extended_attr_record_length;
 	uint32_t lba;
-	uint16_t directory_number;
+	uint16_t parent_dir_num;
 	char directory_identifier[247];
 } __attribute__((packed)) iso9660_path_table_entry_t;
 

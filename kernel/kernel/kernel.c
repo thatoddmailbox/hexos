@@ -10,6 +10,8 @@
 
 #include <kernel/clock.h>
 
+#include <kernel/heap.h>
+
 #include <kernel/idt.h>
 #include <kernel/interrupts.h>
 #include <kernel/isr.h>
@@ -33,8 +35,9 @@
 #include <kernel/vga.h>
 #include <kernel/ps2keyboard.h>
 
-void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initial_stack)
-{
+#include <kernel/vfs.h>
+
+void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initial_stack) {
 	gdt_install();
 
 	terminal_initialize();
@@ -48,6 +51,8 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 	if (!mem_init(mb_info)) {
 		panic("Failed to load memory manager");
 	}
+
+	main_heap_init();
 
 	pci_install(); // pci stuff
 
@@ -70,7 +75,7 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 	isrs_install(); // set up the isrs
 	irq_install(); // set up the irqs
 
-	pic_init();
+	//pic_init();
 
 	// and enable interrupts!
 	enable_interrupts();
@@ -78,8 +83,6 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 	outb(0x70, inb(0x70)&0x7F); // enable non-maskable interrupts
 
 	timer_install(); // install timer
-
-	keyboard_install(); // keyboard setup
 
 	rtc_init(); // rtc setup
 
@@ -94,13 +97,18 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 
 	process_init();
 
+	vfs_init();
+
 	ata_init();
+
+	keyboard_install(); // keyboard setup
+
+	shell_init();
 
 	dbgprint("Starting HexOS...\n");
 }
 
-void kernel_main(void)
-{
+void kernel_main(void) {
 	printf("Welcome to HexOS\n");
 	dbgprint("Welcome to HexOS\n");
 
@@ -139,6 +147,10 @@ void kernel_main(void)
 	cdrom.metadata = &metadata;
 
 	iso9660_init_volume(&cdrom);
+
+	enable_interrupts();
+
+	shell_prompt();
 
 	char input = ' ';
 	char lastChar = ' ';
