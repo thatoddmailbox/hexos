@@ -19,6 +19,17 @@ typedef struct {
 	char data[2041];
 } __attribute__((packed)) iso9660_volume_descriptor_t;
 
+// this date struct is only used in directory entries, but not in the primary volume descriptor
+typedef struct {
+	uint8_t years_since_1900;
+	uint8_t month;
+	uint8_t day;
+	uint8_t hour;
+	uint8_t minute;
+	uint8_t second;
+	uint8_t offset_from_gmt; // in 15 min. intervals from -48 (West) to +52 (East)
+} __attribute__((packed)) iso9660_date_t;
+
 typedef struct {
 	uint8_t length_of_directory_identifier;
 	uint8_t extended_attr_record_length;
@@ -77,5 +88,26 @@ typedef struct {
 	char application_use[512];
 	char reserved[653];
 } __attribute__((packed)) iso9660_primary_volume_descriptor_t;
+
+typedef struct {
+	uint8_t length_of_record;
+	uint8_t extended_attr_record_length;
+
+	uint32_t lba; // TODO: endianness
+	uint32_t unused_1;
+
+	uint32_t length_of_file; // TODO: endianness
+	uint32_t unused_2;
+
+	iso9660_date_t recording_date;
+
+	uint8_t flags;
+	uint8_t interleaved_unit_size;
+	uint8_t interleaved_gap_size;
+	uint16_t volume_sequence_number; // TODO: endianness
+	uint16_t unused_3;
+	uint8_t length_of_file_identifier;
+	char file_identifier_and_system_use[255]; // it's not really 255 bytes, but 255 is the max for the whole record, so
+} __attribute__((packed)) iso9660_directory_entry_t;
 
 #endif
