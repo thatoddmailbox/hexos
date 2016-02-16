@@ -27,56 +27,11 @@ void iso9660_init_volume(block_device * dev, fs_node_t * target, fs_node_t * tar
 	target->parent = target_parent;
 	target->readdir = &iso9660_readdir;
 	target->finddir = &iso9660_finddir;
-
-	// read in the root directory's info
-	((read_block_t)dev->read_block)(dev, buffer, 1, entry->lba);
-
-	iso9660_directory_entry_t * dir_entry = (iso9660_directory_entry_t *) buffer;
-	bool skip_first = true;
-	while (1) {
-		if (dir_entry->length_of_record == 0) {
-			printf("iso9660: stopping, len == 0\n");
-			break;
-		}
-		if (!skip_first && dir_entry->file_identifier_and_system_use[0] != '\1') { // why are these things
-			printf("iso9660: file in root dir: ");
-			terminal_write(dir_entry->file_identifier_and_system_use, dir_entry->length_of_file_identifier);
-			printf(" - len is %d bytes\n", dir_entry->length_of_file);
-		}
-		if (skip_first) {
-			skip_first = false;
-		}
-		buffer += dir_entry->length_of_record;
-		dir_entry = (iso9660_directory_entry_t *) buffer;
-	}
-
-	/*uint16_t i = 1;
-	while (1) {
-		if (entry->length_of_directory_identifier == 0) {
-			printf("iso9660: stopping, dir iden len == 0\n");
-			break;
-		}
-		printf("iso9660: directory_identifier #%d: ", i);
-		terminal_write(entry->directory_identifier, entry->length_of_directory_identifier);
-		printf(" (parentnum = %d, len = %d, lba = %d)\n", entry->parent_dir_num, entry->length_of_directory_identifier, entry->lba);
-
-		// somehow it doesn't like adding to entry, so add to buffer2
-		// and set entry = buffer2
-		buffer2 += 8;
-		buffer2 += entry->length_of_directory_identifier;
-		if (entry->length_of_directory_identifier % 2 == 1) {
-			buffer2 += 1; // padding byte
-		}
-		entry = (iso9660_path_table_entry_t *) buffer2;
-
-		i++;
-	}*/
-
-	//iso9660_path_table_entry_t * entry2 = buffer2 + ISO9660_PATH_TABLE_OFFSET;
-	//printf("iso9660: iden: %s\n", entry->directory_identifier);
 }
 
 dirent iso9660_resp;
+fs_node_t iso9660_fsnode_resp;
+
 dirent * iso9660_readdir(fs_node_t * this, uint32_t i) {
 	// TODO: make this more efficient
 	// TODO: this currently will take exponentially longer as the files in a directory goes up
@@ -126,6 +81,86 @@ dirent * iso9660_readdir(fs_node_t * this, uint32_t i) {
 	return 0;
 }
 
+fs_node_t * iso9660_entry_to_node(iso9660_directory_entry_t * dir_entry, block_device * dev, fs_node_t * parent) {
+	// TODO: SUSP and Rock Ridge stuff will go here
+	// TODO: Joliet? it seems complicated...
+
+	if (dir_entry->length_of_file_identifier <= 255) {
+		strcpy(iso9660_fsnode_resp.name, dir_entry->file_identifier_and_system_use);
+		iso9660_fsnode_resp.name[dir_entry->length_of_file_identifier] = '\0';
+	} else {
+		// no buffer overflow plox
+		strcpy(iso9660_fsnode_resp.name, "error");
+		iso9660_fsnode_resp.name[6] = '\0';
+	}
+
+	// TODO: all those other flags
+	if (dir_entry->flags & ISO9660_FLAG_DIRECTORY) {
+		iso9660_fsnode_resp.flags = FS_DIRECTORY;
+	} else {
+		iso9660_fsnode_resp.flags = FS_FILE;
+	}
+
+	// TODO: fill this in with info from Rock Ridge, when that's done
+	iso9660_fsnode_resp.mask = 0;
+	iso9660_fsnode_resp.uid = 0;
+	iso9660_fsnode_resp.gid = 0;
+
+	iso9660_fsnode_resp.length = dir_entry->length_of_file;
+
+	iso9660_fsnode_resp.inode = dir_entry->lba;
+	iso9660_fsnode_resp.impl = (uint32_t) dev;
+
+	iso9660_fsnode_resp.parent = parent;
+
+	// TODO: these
+	iso9660_fsnode_resp.read = 0;
+	iso9660_fsnode_resp.write = 0;
+	iso9660_fsnode_resp.open = 0;
+	iso9660_fsnode_resp.close = 0;
+
+	iso9660_fsnode_resp.readdir = &iso9660_readdir;
+	iso9660_fsnode_resp.finddir = &iso9660_finddir;
+	return &iso9660_fsnode_resp;
+}
+
 fs_node_t * iso9660_finddir(fs_node_t * this, char * name) {
+	void * buffer = kalloc(&main_heap, 2048);
+	block_device * dev = (block_device *) this->impl;
+	((read_block_t)dev->read_block)(dev, buffer, 1, this->inode);
+
+	iso9660_directory_entry_t * dir_entry = (iso9660_directory_entry_t *) buffer;
+	bool skip_first = true;
+	uint32_t count = 0;
+
+	while (1) {
+		if (dir_entry->length_of_record == 0) {
+			kfree(&main_heap, buffer);
+			return 0;
+		}
+		if (!skip_first && dir_entry->file_identifier_and_system_use[0] != '\1') { // why are these things
+			if (dir_entry->length_of_file_identifier <= 255) {
+				dir_entry->file_identifier_and_system_use[dir_entry->length_of_file_identifier] = '\0';
+				if (!strcmp(dir_entry->file_identifier_and_system_use, name)) { // is it the right file?
+					// yay, let's fill in a response and send it back
+					fs_node_t * response = iso9660_entry_to_node(dir_entry, dev, this);
+					kfree(&main_heap, buffer);
+					return response;
+				}
+			} else {
+				// blegh no buffer overflow
+				dbgprint("iso9660: warning: file identifier too large!\n");
+				kfree(&main_heap, buffer);
+				return 0;
+			}
+		}
+		if (skip_first) {
+			skip_first = false;
+		}
+		buffer += dir_entry->length_of_record;
+		dir_entry = (iso9660_directory_entry_t *) buffer;
+	}
+
+	kfree(&main_heap, buffer);
 	return 0;
 }

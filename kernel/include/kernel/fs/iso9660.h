@@ -12,6 +12,15 @@
 // ... reserved ...
 #define ISO9660_VOLUME_DESC_SET_TERMINATOR 255
 
+#define ISO9660_FLAG_HIDDEN 0x01
+#define ISO9660_FLAG_DIRECTORY 0x02
+#define ISO9660_FLAG_ASSOCIATED 0x04
+#define ISO9660_FLAG_E_ATTR_RECORD_HAS_INFO 0x08
+#define ISO9660_FLAG_E_ATTR_RECORD_HAS_PERMS 0x10
+#define ISO9660_FLAG_RESERVED_1 0x20
+#define ISO9660_FLAG_RESERVED_2 0x40
+#define ISO9660_FLAG_NOT_FINAL 0x80
+
 typedef struct {
 	uint8_t type_code;
 	char identifier[5]; // always 'cd001'
@@ -111,6 +120,9 @@ typedef struct {
 } __attribute__((packed)) iso9660_directory_entry_t;
 
 void iso9660_init_volume(block_device * dev, fs_node_t * target, fs_node_t * target_parent);
+
+fs_node_t * iso9660_entry_to_node(iso9660_directory_entry_t * dir_entry, block_device * dev, fs_node_t * parent);
+
 dirent * iso9660_readdir(fs_node_t * this, uint32_t i);
 fs_node_t * iso9660_finddir(fs_node_t * this, char * name);
 
