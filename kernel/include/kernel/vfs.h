@@ -44,6 +44,7 @@ typedef struct { // One of these is returned by the readdir call, according to P
 
 extern fs_node_t fs_root; // The root of the filesystem.
 extern fs_node_t fs_mnt; // storing mounted stuff
+extern fs_node_t fs_cdrom_mnt;
 
 // Standard read/write/open/close functions. Note that these are all suffixed with
 // _fs to distinguish them from the read/write/open/close which deal with file descriptors

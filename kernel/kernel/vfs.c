@@ -4,6 +4,7 @@
 
 fs_node_t fs_root;
 fs_node_t fs_mnt;
+fs_node_t fs_cdrom_mnt;
 
 uint32_t read_fs(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
 	// Has the node got a read callback?
@@ -79,6 +80,10 @@ fs_node_t * root_finddir(fs_node_t * node, char * name) {
 	if (node == &fs_root) {
 		if (!strcmp(name, "mnt")) {
 			return &fs_mnt;
+		}
+	} else if (node == &fs_mnt) {
+		if (!strcmp(name, "cdrom")) {
+			return &fs_cdrom_mnt;
 		}
 	}
 	return 0;

@@ -146,7 +146,7 @@ void kernel_main(void) {
 	cdrom.read_block = atapi_block_read;
 	cdrom.metadata = &metadata;
 
-	iso9660_init_volume(&cdrom);
+	iso9660_init_volume(&cdrom, &fs_cdrom_mnt, &fs_mnt);
 
 	enable_interrupts();
 
