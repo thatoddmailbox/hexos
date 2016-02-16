@@ -12,8 +12,10 @@ http://wiki.osdev.org/User:Pancakes/BitmapHeapImplementation
 */
 void main_heap_init() {
 	kheap_init(&main_heap);
-	void * block = memory_alloc_page(0);
-	kheap_add_block(&main_heap, (uint32_t) block, PAGE_SIZE, 16);
+	for (uint8_t i = 0; i < 10; i++) {
+		void * block = memory_alloc_page(0);
+		kheap_add_block(&main_heap, (uint32_t) block, PAGE_SIZE, 16);
+	}
 }
 
 void kheap_init(kernel_heap *heap) {
@@ -114,6 +116,7 @@ void * kalloc(kernel_heap *heap, uint32_t size) {
 		}
 	}
 
+	panic("kalloc: Out of memory!");
 	return 0;
 }
 

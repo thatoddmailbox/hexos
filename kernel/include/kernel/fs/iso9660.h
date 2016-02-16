@@ -124,6 +124,6 @@ void iso9660_init_volume(block_device * dev, fs_node_t * target, fs_node_t * tar
 fs_node_t * iso9660_entry_to_node(iso9660_directory_entry_t * dir_entry, block_device * dev, fs_node_t * parent);
 
 dirent * iso9660_readdir(fs_node_t * this, uint32_t i);
-fs_node_t * iso9660_finddir(fs_node_t * this, char * name);
+fs_node_t * iso9660_finddir(fs_node_t * current_dir, char * name);
 
 #endif
