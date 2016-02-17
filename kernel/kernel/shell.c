@@ -1,5 +1,6 @@
 #include <stdint.h>
 
+#include <kernel/heap.h>
 #include <kernel/shell.h>
 #include <kernel/vfs.h>
 
@@ -29,10 +30,6 @@ void shell_putchar(char c) {
 		shell_prompt();
 		return;
 	} else if (c == '\b') {
-		/*char buf[3];
-		itoa(buf, shell_buffer_len, 10);
-		dbgprint(buf);
-		dbgprint("\n");*/
 		if (shell_buffer_len <= 0) {
 			return;
 		}
@@ -74,9 +71,7 @@ void shell_runcmd() {
 				return;
 			}
 			fs_node_t * old_dir = current_dir;
-			dbgprint("recreating...\n");
 			current_dir = current_dir->parent.recreate(&(current_dir->parent));
-			dbgprint("hex...\n");
 			old_dir->free_node(old_dir);
 			return;
 		}
@@ -92,6 +87,8 @@ void shell_runcmd() {
 		current_dir = dest_node;
 	} else if (!strcmp(shell_buffer, "pwd")) {
 		printf("%s\n", shell_pwd());
+	} else if (!strcmp(shell_buffer, "mem")) {
+		printf("TODO: this\n");
 	} else {
 		printf("Unknown or invalid command!\n");
 		return;

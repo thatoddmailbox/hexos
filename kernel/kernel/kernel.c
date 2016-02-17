@@ -151,7 +151,7 @@ void kernel_main(void) {
 	mnt_mini.inode = 1;
 	mnt_mini.recreate = &root_recreate;
 
-	iso9660_init_volume(&cdrom, &fs_cdrom_mnt, &fs_mnt);
+	iso9660_init_volume(&cdrom, &fs_cdrom_mnt, mnt_mini);
 
 	enable_interrupts();
 

@@ -5,6 +5,7 @@
 #include <kernel/mem.h>
 
 kernel_heap main_heap;
+uint32_t heap_used_blocks = 0;
 
 /*
 Based off of code from Leonard Kevin McGuire Jr (www.kmcg3413.net) (kmcg3413@gmail.com)
@@ -12,7 +13,7 @@ http://wiki.osdev.org/User:Pancakes/BitmapHeapImplementation
 */
 void main_heap_init() {
 	kheap_init(&main_heap);
-	for (uint8_t i = 0; i < 10; i++) {
+	for (uint8_t i = 0; i < 4; i++) {
 		void * block = memory_alloc_page(0);
 		kheap_add_block(&main_heap, (uint32_t) block, PAGE_SIZE, 16);
 	}
@@ -69,6 +70,8 @@ void * kalloc(kernel_heap *heap, uint32_t size) {
 	uint32_t x, y, z;
 	uint32_t bneed;
 	uint8_t nid;
+
+	heap_used_blocks += size;
 
 	/* iterate blocks */
 	for (b = heap->fblock; b; b = b->next) {
@@ -150,5 +153,6 @@ void kfree(kernel_heap *heap, void *ptr) {
 	}
 
 	/* this error needs to be raised or reported somehow */
+	panic("kfree: Invalid pointer!");
 	return;
 }

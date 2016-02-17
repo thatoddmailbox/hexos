@@ -99,10 +99,13 @@ fs_node_t * root_finddir(fs_node_t * node, char * name) {
 }
 
 fs_node_t * root_recreate(fs_node_mini_t * mini) {
+	dbgprint("root_recreate!\n");
 	if (mini->inode == 0) { // root dir
 		return &fs_root;
 	} else if (mini->inode == 1) { // mnt dir
 		return &fs_mnt;
+	} else {
+		panic("root_recreate: error invalid inode");
 	}
 }
 
@@ -132,4 +135,7 @@ void vfs_init() {
 	fs_root.free_node = &root_free_node;
 	fs_root.parent.recreate = 0;
 	fs_root.inode = 0;
+
+	fs_cdrom_mnt.recreate = &root_recreate;
+	fs_cdrom_mnt.free_node = &root_free_node;
 }

@@ -127,6 +127,7 @@ typedef struct {
 void iso9660_init_volume(block_device * dev, fs_node_t * target, fs_node_mini_t target_parent);
 
 fs_node_t * iso9660_entry_to_node(iso9660_directory_entry_t * dir_entry, iso9660_fs * fs_info, fs_node_t * parent);
+fs_node_t * iso9660_entry_to_node_mini(iso9660_directory_entry_t * dir_entry, iso9660_fs * fs_info, fs_node_mini_t parent);
 
 fs_node_t * iso9660_recreate(fs_node_mini_t * mini);
 void iso9660_free_node(fs_node_t * node);
