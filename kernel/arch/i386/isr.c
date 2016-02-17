@@ -98,25 +98,25 @@ const char *exception_messages[] =
     "Debug",
     "Non Maskable Interrupt",
     "Breakpoint",
-    "Into Detected Overflow",
-    "Out of Bounds",
+    "Overflow",
+    "Bound Range Exceeded",
     "Invalid Opcode",
-    "No Coprocessor",
+    "Device Not Available",
 
     "Double Fault",
     "Coprocessor Segment Overrun",
     "Bad TSS",
     "Segment Not Present",
-    "Stack Fault",
+    "Stack-Segment Fault",
     "General Protection Fault",
     "Page Fault",
-    "Unknown Interrupt",
+    "Reserved",
 
-    "Coprocessor Fault",
+    "x87 Floating-Point Exception",
     "Alignment Check",
     "Machine Check",
-    "Reserved",
-    "Reserved",
+    "SIMD Floating-Point Exception",
+    "Virtualization Exception",
     "Reserved",
     "Reserved",
     "Reserved",
@@ -127,7 +127,7 @@ const char *exception_messages[] =
     "Reserved",
     "Reserved",
     "Reserved",
-    "Reserved",
+    "Security Exception",
     "Reserved"
 };
 
@@ -168,7 +168,8 @@ void fault_handler(struct regs *r)
             panic(exception_messages[r->int_no]);
             for (;;);
         } else {
-            process_exit(-1); // kill the process
+            // TODO: signal the process rather than kill it
+            process_exit(-1, exception_messages[r->int_no]); // kill the process
         }
     }
 }

@@ -87,7 +87,7 @@ void process_init();
 struct process * process_create( unsigned code_size, unsigned stack_size );
 void process_yield();
 void process_preempt();
-void process_exit( int code );
+void process_exit(int code, char * extra_info);
 void process_dump( struct process *p );
 
 void process_wait( struct list *q );

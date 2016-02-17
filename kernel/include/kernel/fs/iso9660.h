@@ -119,9 +119,17 @@ typedef struct {
 	char file_identifier_and_system_use[255]; // it's not really 255 bytes, but 255 is the max for the whole record, so
 } __attribute__((packed)) iso9660_directory_entry_t;
 
-void iso9660_init_volume(block_device * dev, fs_node_t * target, fs_node_t * target_parent);
+typedef struct {
+	block_device * dev;
+	fs_node_mini_t mountpoint;
+} iso9660_fs;
 
-fs_node_t * iso9660_entry_to_node(iso9660_directory_entry_t * dir_entry, block_device * dev, fs_node_t * parent);
+void iso9660_init_volume(block_device * dev, fs_node_t * target, fs_node_mini_t target_parent);
+
+fs_node_t * iso9660_entry_to_node(iso9660_directory_entry_t * dir_entry, iso9660_fs * fs_info, fs_node_t * parent);
+
+fs_node_t * iso9660_recreate(fs_node_mini_t * mini, fs_node_mini_t * parent);
+void iso9660_free_node(fs_node_t * node);
 
 dirent * iso9660_readdir(fs_node_t * this, uint32_t i);
 fs_node_t * iso9660_finddir(fs_node_t * current_dir, char * name);

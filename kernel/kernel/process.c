@@ -121,8 +121,11 @@ void process_yield() {
 	process_switch(PROCESS_STATE_READY);
 }
 
-void process_exit(int code) {
-	printf("process exiting with status %d...\n",code);
+void process_exit(int code, char * extra_info) {
+	printf("process exited with status %d\n",code);
+	if (extra_info != 0) {
+		printf("%s\n", extra_info);
+	}
 	current->exitcode = code;
 	process_switch(PROCESS_STATE_GRAVE);
 }

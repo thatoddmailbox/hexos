@@ -69,11 +69,13 @@ void shell_runcmd() {
 	} else if (shell_buffer[0] == 'c' && shell_buffer[1] == 'd' && shell_buffer[2] == ' ') {
 		char * dest = shell_buffer + 3;
 		if (!strcmp(dest, "..")) {
-			if (current_dir->parent == 0) {
+			if (current_dir->parent.recreate == 0) {
 				printf("cd: cannot go up further\n");
 				return;
 			}
-			current_dir = current_dir->parent;
+			fs_node_t * old_dir = current_dir;
+			current_dir = current_dir->parent.recreate(&current_dir->parent);
+			old_dir->free_node(old_dir);
 			return;
 		}
 		fs_node_t * dest_node = finddir_fs(current_dir, dest);
