@@ -74,7 +74,9 @@ void shell_runcmd() {
 				return;
 			}
 			fs_node_t * old_dir = current_dir;
-			current_dir = current_dir->parent.recreate(&current_dir->parent);
+			dbgprint("recreating...\n");
+			current_dir = current_dir->parent.recreate(&(current_dir->parent));
+			dbgprint("hex...\n");
 			old_dir->free_node(old_dir);
 			return;
 		}

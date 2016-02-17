@@ -31,6 +31,9 @@ void iso9660_init_volume(block_device * dev, fs_node_t * target, fs_node_mini_t 
 	target->parent = target_parent;
 	target->readdir = &iso9660_readdir;
 	target->finddir = &iso9660_finddir;
+
+	target->recreate = &iso9660_recreate;
+	target->free_node = &iso9660_free_node;
 }
 
 dirent iso9660_resp;
@@ -138,7 +141,7 @@ fs_node_t * iso9660_entry_to_node(iso9660_directory_entry_t * dir_entry, iso9660
 	return response;
 }
 
-fs_node_t * iso9660_recreate(fs_node_mini_t * mini, fs_node_mini_t * parent) {
+fs_node_t * iso9660_recreate(fs_node_mini_t * mini) {
 	dbgprint("O HAI THERE PART 1\n");
 	fs_node_t * response = kalloc(&main_heap, sizeof(fs_node_t));
 	iso9660_fs * fs_info = (iso9660_fs *) mini->impl;
@@ -185,7 +188,9 @@ fs_node_t * iso9660_finddir(fs_node_t * current_dir, char * name) {
 				dir_entry->file_identifier_and_system_use[dir_entry->length_of_file_identifier] = '\0';
 				if (!strcmp(dir_entry->file_identifier_and_system_use, name)) { // is it the right file?
 					// yay, let's fill in a response and send it back
+					dbgprint("finddir entry to node!\n");
 					fs_node_t * response = iso9660_entry_to_node(dir_entry, fs_info, current_dir);
+					dbgprint("response of finddir!\n");
 					kfree(&main_heap, buffer);
 					return response;
 				}
