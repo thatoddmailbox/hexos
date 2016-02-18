@@ -19,9 +19,9 @@ See [this file](REQUIREMENTS.md).
 * Probably can multitask (there's code, but nothing really uses it)
 * Browse a virtual filesystem
 * Mount its own ISO9660 filesystem into that virtual filesystem
+* Read ISO9660 files
 
 ## Things it will do soon
-* Read ISO9660 files
 * Run a.out programs
 * Have a userspace
 
