@@ -135,4 +135,9 @@ void iso9660_free_node(fs_node_t * node);
 dirent * iso9660_readdir(fs_node_t * this, uint32_t i);
 fs_node_t * iso9660_finddir(fs_node_t * current_dir, char * name);
 
+void iso9660_open(fs_node_t *node, uint8_t read, uint8_t write);
+void iso9660_close(fs_node_t *node);
+uint32_t iso9660_read(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+uint32_t iso9660_write(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+
 #endif

@@ -132,11 +132,10 @@ fs_node_t * iso9660_entry_to_node_mini(iso9660_directory_entry_t * dir_entry, is
 	response->parent.impl = parent.impl;
 	response->parent.recreate = parent.recreate;
 
-	// TODO: these things
-	response->read = 0;
-	response->write = 0;
-	response->open = 0;
-	response->close = 0;
+	response->read = &iso9660_read;
+	response->write = &iso9660_write;
+	response->open = &iso9660_open;
+	response->close = &iso9660_close;
 
 	response->readdir = &iso9660_readdir;
 	response->finddir = &iso9660_finddir;
@@ -268,5 +267,26 @@ fs_node_t * iso9660_finddir(fs_node_t * current_dir, char * name) {
 	}
 
 	kfree(&main_heap, buffer_start);
+	return 0;
+}
+
+void iso9660_open(fs_node_t *node, uint8_t read, uint8_t write) {
+
+}
+
+void iso9660_close(fs_node_t *node) {
+
+}
+
+uint32_t iso9660_read(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
+	iso9660_fs * fs_info = (iso9660_fs *) node->impl;
+	uint32_t readsize = size;
+	if (readsize > node->length) {
+		readsize = node->length;
+	}
+	//fs_info->dev
+}
+
+uint32_t iso9660_write(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
 	return 0;
 }
