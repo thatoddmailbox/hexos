@@ -280,11 +280,20 @@ void iso9660_close(fs_node_t *node) {
 
 uint32_t iso9660_read(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {
 	iso9660_fs * fs_info = (iso9660_fs *) node->impl;
+
 	uint32_t readsize = size;
 	if (readsize > node->length) {
 		readsize = node->length;
 	}
-	//fs_info->dev
+	uint32_t blocksize = readsize;
+	while (blocksize % 2048 != 0) {
+		blocksize++;
+	}
+
+	void * blockbuf = kalloc(&main_heap, blocksize);
+	((read_block_t)fs_info->dev->read_block)(fs_info->dev, blockbuf, 1, node->inode);
+	memcpy(buffer, blockbuf, readsize);
+	kfree(&main_heap, blockbuf);
 }
 
 uint32_t iso9660_write(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer) {

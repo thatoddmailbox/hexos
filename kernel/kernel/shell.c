@@ -85,6 +85,23 @@ void shell_runcmd() {
 			return;
 		}
 		current_dir = dest_node;
+	} else if (shell_buffer[0] == 'c' && shell_buffer[1] == 'a' && shell_buffer[2] == 't' && shell_buffer[3] == ' ') {
+		char * dest = shell_buffer + 4;
+		fs_node_t * dest_node = finddir_fs(current_dir, dest);
+		if (dest_node == 0) {
+			printf("cat: %s: no such file or directory\n", dest);
+			return;
+		}
+		if ((dest_node->flags&0x7) == FS_DIRECTORY) {
+			printf("cat: %s: is a directory\n", dest);
+			return;
+		}
+		char * filebuf = kalloc(&main_heap, dest_node->length + 1);
+		open_fs(dest_node, 1, 0);
+		read_fs(dest_node, 0, dest_node->length, filebuf);
+		filebuf[dest_node->length] = '\0'; // make sure it ends with a null byte
+		printf("%s", filebuf);
+		kfree(&main_heap, filebuf);
 	} else if (!strcmp(shell_buffer, "pwd")) {
 		printf("%s\n", shell_pwd());
 	} else if (!strcmp(shell_buffer, "mem")) {
