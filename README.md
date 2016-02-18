@@ -1,12 +1,15 @@
 ```
 _   _            ___  ____  
-| | | | _____  __/ _ \/ ___| 
-| |_| |/ _ \ \/ / | | \___ \ 
+| | | | _____  __/ _ \/ ___|
+| |_| |/ _ \ \/ / | | \___ \
 |  _  |  __/>  <| |_| |___) |
-|_| |_|\___/_/\_\\___/|____/ 
+|_| |_|\___/_/\_\\___/|____/
 ```
 
 HexOS is an operating system kernel that, currently, does not do much.
+
+## System requirements
+See [this file](REQUIREMENTS.md).
 
 ## Things it does do
 * Turn on
@@ -16,3 +19,12 @@ HexOS is an operating system kernel that, currently, does not do much.
 * Probably can multitask (there's code, but nothing really uses it)
 * Browse a virtual filesystem
 * Mount its own ISO9660 filesystem into that virtual filesystem
+
+## Things it will do soon
+* Read ISO9660 files
+* Run a.out programs
+* Have a userspace
+
+## Things I hope it does at some point
+* Run `Xorg` and `twm`
+* Have a networking stack
