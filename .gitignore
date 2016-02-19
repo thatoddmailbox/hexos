@@ -1,17 +1,19 @@
+# things from toolchain
 binutils-*/
-hexos.iso
-hexos.bin
-build-*/
 gcc-*/
 grub/
 objconv/
+build-*/
 
+# compiled objects
 *.o
+hexos.bin
 
+# iso and sysroot should be compiled from source
 *.iso
 isodir
 sysroot
 
-hdd.img
 
-core.iso
+hdd.img # don't upload the harddrive image. can you imagine the merge conflicts?
+core.iso # external binary that should not be uploaded to git
