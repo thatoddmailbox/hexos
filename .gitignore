@@ -14,6 +14,7 @@ hexos.bin
 isodir
 sysroot
 
-
-hdd.img # don't upload the harddrive image. can you imagine the merge conflicts?
-core.iso # external binary that should not be uploaded to git
+# don't upload the harddrive image. can you imagine the merge conflicts?
+hdd.img
+ # external binary that should not be uploaded to git
+core.iso
