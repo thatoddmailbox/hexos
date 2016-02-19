@@ -9,12 +9,14 @@
 #define FS_SYMLINK     0x06
 #define FS_MOUNTPOINT  0x08 // Is the file an active mountpoint?
 
-typedef uint32_t (*read_type_t)(struct fs_node*,uint32_t,uint32_t,uint8_t*);
-typedef uint32_t (*write_type_t)(struct fs_node*,uint32_t,uint32_t,uint8_t*);
-typedef void (*open_type_t)(struct fs_node*, uint8_t read, uint8_t write);
-typedef void (*close_type_t)(struct fs_node*);
+typedef struct fs_node fs_node_t;
+
+typedef uint32_t (*read_type_t)(fs_node_t*,uint32_t,uint32_t,uint8_t*);
+typedef uint32_t (*write_type_t)(fs_node_t*,uint32_t,uint32_t,uint8_t*);
+typedef void (*open_type_t)(fs_node_t*, uint8_t read, uint8_t write);
+typedef void (*close_type_t)(fs_node_t*);
 typedef struct dirent * (*readdir_type_t)(struct fs_node_mini*,uint32_t);
-typedef struct fs_node * (*finddir_type_t)(struct fs_node*,char *name);
+typedef struct fs_node * (*finddir_type_t)(fs_node_t*,char *name);
 
 typedef struct fs_node * (*recreate_type_t)(struct fs_node_mini *);
 typedef void (*free_node_type_t)(struct fs_node *);

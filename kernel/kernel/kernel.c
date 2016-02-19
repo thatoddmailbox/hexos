@@ -10,6 +10,8 @@
 
 #include <kernel/clock.h>
 
+#include <kernel/gdt.h>
+
 #include <kernel/heap.h>
 
 #include <kernel/idt.h>

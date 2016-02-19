@@ -11,7 +11,7 @@ typedef struct {
 } block_device;
 
 typedef struct {
-	uint8_t ata_number
+	uint8_t ata_number;
 } ata_metadata;
 
 void atapi_block_read(block_device * this, void * buffer, int number_of_blocks, int offset);
