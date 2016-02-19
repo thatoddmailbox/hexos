@@ -24,7 +24,11 @@ See [this file](REQUIREMENTS.md).
 ## Things it will do soon
 * Run a.out programs
 * Have a userspace
+* Syscalls
 
 ## Things I hope it does at some point
 * Run `Xorg` and `twm`
 * Have a networking stack
+* Read ext2 filesystems
+* Write to ext2 filesystems
+* Be self-hosting (you can make changes to HexOS using HexOS)
