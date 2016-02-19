@@ -13,7 +13,7 @@ http://wiki.osdev.org/User:Pancakes/BitmapHeapImplementation
 */
 void main_heap_init() {
 	kheap_init(&main_heap);
-	for (uint8_t i = 0; i < 4; i++) {
+	for (uint8_t i = 0; i < 15; i++) {
 		void * block = memory_alloc_page(0);
 		kheap_add_block(&main_heap, (uint32_t) block, PAGE_SIZE, 16);
 	}
