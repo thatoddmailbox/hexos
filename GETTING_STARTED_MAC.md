@@ -151,7 +151,7 @@ grub-mkrescue (GRUB) 2.02~beta2
 If so, you're almost done!
 
 ## Last steps
-Create a blank hard drive by `cd`-ing into the HexOS source code folder and running `./create_blank_hdd.sh`.
+Create a blank hard drive by `cd`-ing into the HexOS source code folder and running `./create_blank_hdd.sh`. You'll only have to do this once.
 
 If you get an error, you might have to run `chmod +x create_blank_hdd.sh` first.
 
