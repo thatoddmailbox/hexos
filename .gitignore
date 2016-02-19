@@ -16,5 +16,5 @@ sysroot
 
 # don't upload the harddrive image. can you imagine the merge conflicts?
 hdd.img
- # external binary that should not be uploaded to git
+# external binary that should not be uploaded to git
 core.iso
