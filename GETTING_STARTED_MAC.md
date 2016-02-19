@@ -121,4 +121,38 @@ nano ~/.bash_profile
 This will open the `nano` text editor. The file that opens might already have some text, or it could be blank. Type in the line `export PATH=$HOME/opt/cross/bin:$PATH` at the bottom of the file. Then, press control-O (not command) and then enter. Finally, press control-X to exit `nano`.
 
 ## Bootloader
-TODO: this section
+HexOS uses a bootloader called `grub`. The bootloader handles initial power-on, and, in this case, displays a menu to let you select between debug mode or not.
+
+`grub` requires a program called `objconv`. You can download it from [this GitHub repository](https://github.com/vertis/objconv).
+
+Open a Terminal window and `cd` to the folder with the `objconv` code. Then, run the following:
+```
+g++ -o objconv -O2 src/*.cpp
+cp objconv ~/opt/cross/bin
+```
+
+Now, cd to the folder with the HexOS source code. Run the following code to download and compile grub:
+```
+git clone git://git.savannah.gnu.org/grub.git
+mkdir build-grub
+cd build-grub
+../grub/configure --disable-werror TARGET_CC=i686-elf-gcc TARGET_OBJCOPY=i686-elf-objcopy \
+TARGET_STRIP=i686-elf-strip TARGET_NM=i686-elf-nm TARGET_RANLIB=i686-elf-ranlib --target=i686-elf
+make
+sudo make install
+```
+
+Once this is done, run `grub-mkrescure --version`. You should see something like:
+
+```
+grub-mkrescue (GRUB) 2.02~beta2
+```
+
+If so, you're almost done!
+
+## Last steps
+Create a blank hard drive by `cd`-ing into the HexOS source code folder and running `./create_blank_hdd.sh`.
+
+If you get an error, you might have to run `chmod +x create_blank_hdd.sh` first.
+
+Then, run `./qemu.sh`. `qemu.sh` is a script that will automagically compile the latest changes you've made and launch QEMU. Once you're done testing, you can press Control-C in the Terminal window to close QEMU. Make your changes, and run `./qemu.sh` again. It will recompile the parts of HexOS you changed and start QEMU so you can test it!
