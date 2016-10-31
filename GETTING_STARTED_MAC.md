@@ -52,7 +52,7 @@ export PREFIX="$HOME/opt/cross"
 export TARGET=i686-elf
 export PATH="$PREFIX/bin:$PATH"
 
-mkdir $HOME/opt/cross
+mkdir -p $HOME/opt/cross
 ```
 
 GCC requires binutils, so we will compile binutils first. `cd` to the folder with the `binutils-x.xx` folder in it (*don't go into the binutils folder!*). Then, run the following (replace the x.xx with your version of binutils):
@@ -134,6 +134,9 @@ cp objconv ~/opt/cross/bin
 Now, cd to the folder with the HexOS source code. Run the following code to download and compile grub:
 ```
 git clone git://git.savannah.gnu.org/grub.git
+cd grub
+./autogen.sh
+cd ..
 mkdir build-grub
 cd build-grub
 ../grub/configure --disable-werror TARGET_CC=i686-elf-gcc TARGET_OBJCOPY=i686-elf-objcopy \
@@ -142,7 +145,7 @@ make
 sudo make install
 ```
 
-Once this is done, run `grub-mkrescure --version`. You should see something like:
+Once this is done, run `grub-mkrescue --version`. You should see something like:
 
 ```
 grub-mkrescue (GRUB) 2.02~beta2
