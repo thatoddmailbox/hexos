@@ -291,7 +291,7 @@ uint32_t iso9660_read(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *
 	}
 
 	void * blockbuf = kalloc(&main_heap, blocksize);
-	((read_block_t)fs_info->dev->read_block)(fs_info->dev, blockbuf, 1, node->inode);
+	((read_block_t)fs_info->dev->read_block)(fs_info->dev, blockbuf, 1, node->inode + offset);
 	memcpy(buffer, blockbuf, readsize);
 	kfree(&main_heap, blockbuf);
 }

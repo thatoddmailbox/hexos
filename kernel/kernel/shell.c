@@ -98,11 +98,27 @@ void shell_runcmd() {
 			printf("cat: %s: is a directory\n", dest);
 			return;
 		}
-		char * filebuf = kalloc(&main_heap, dest_node->length + 1);
+		char * filebuf = kalloc(&main_heap, 2048 + 1);
 		open_fs(dest_node, 1, 0);
-		read_fs(dest_node, 0, dest_node->length, filebuf);
-		filebuf[dest_node->length] = '\0'; // make sure it ends with a null byte
-		printf("%s\n", filebuf);
+		int fileLeft = dest_node->length;
+		int offset = 0;
+		while (1) {
+			int toRead = 0;
+			if (fileLeft >= 2048) {
+				toRead = 2048;
+			} else {
+				toRead = fileLeft;
+			}
+			read_fs(dest_node, (offset / 2048), toRead, filebuf);
+			filebuf[toRead] = '\0'; // make sure it ends with a null byte
+			printf("%s", filebuf);
+			fileLeft -= toRead;
+			offset += toRead;
+			if (fileLeft <= 0) {
+				break;
+			}
+		}
+		printf("\n");
 		kfree(&main_heap, filebuf);
 	} else if (shell_buffer[0] == 'f' && shell_buffer[1] == 'i' && shell_buffer[2] == 'l' && shell_buffer[3] == 'e' && shell_buffer[4] == 's' && shell_buffer[5] == 'i' && shell_buffer[6] == 'z' && shell_buffer[7] == 'e') {
 		char * dest = shell_buffer + 9;
