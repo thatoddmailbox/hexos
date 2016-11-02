@@ -10,16 +10,45 @@
 
 struct process *current=0;
 struct list ready_list = {0,0};
+bool hasInited = false;
 
 void process_init() {
+	//process_create(0,0);
+	printf("process_init 1\n");
 	current = process_create(0,0);
+	printf("process_init 2\n");
 
+	current->name = "kernel";
+
+	printf("process_init 3\n");
 	pagetable_load(current->pagetable);
+	printf("process_init 4\n");
 	pagetable_enable();
+	printf("process_init 5\n");
 
 	current->state = PROCESS_STATE_READY;
+	//list_push_tail(&ready_list,&current->node);
 
 	dbgprint("process: ready\n");
+	hasInited = true;
+}
+
+void process_test() {
+	//process_create(0,0);
+	//process_switch(PROCESS_STATE_READY);
+	struct process *test = process_create(128,0);
+
+	test->name = "test";
+
+	pagetable_load(test->pagetable);
+	pagetable_enable();
+
+	*((char*)0x80000000) = 0xcd;
+	*((char*)0x80000001) = 0x80;
+
+	test->state = PROCESS_STATE_READY;
+
+	list_push_tail(&ready_list,&test->node);
 }
 
 static void process_stack_init(struct process *p) {
@@ -87,7 +116,9 @@ static void process_switch(int newstate) {
 
 	while(1) {
 		current = (struct process *) list_pop_head(&ready_list);
-		if(current) break;
+		if(current) {
+			break;
+		}
 		enable_interrupts();
 		wait_interrupts();
 		disable_interrupts();
@@ -152,6 +183,17 @@ void process_wakeup_all(struct list *q) {
 	}
 }
 
+void process_print_all(struct list *q) {
+	struct process *p;
+	while((p = (struct process*)list_pop_head(q))) {
+		printf("%s (state: %d)\n", p->name, p->state);
+	}
+}
+
+void process_print_all_ready() {
+	process_print_all(&ready_list);
+}
+
 void process_dump( struct process *p) {
 	struct x86_stack *s = (struct x86_stack*)(p->kstack+PAGE_SIZE-sizeof(*s));
 	printf("kstack: %x\n",p->kstack);
@@ -165,4 +207,8 @@ void process_dump( struct process *p) {
 	printf("ebp: %x\n",s->regs1.ebp);
 	printf("esp: %x\n",s->esp);
 	printf("eip: %x\n",s->eip);
+}
+
+void process_dump_current() {
+	process_dump(current);
 }

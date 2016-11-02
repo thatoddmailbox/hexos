@@ -75,6 +75,7 @@ struct process {
 	struct list_node node;
 	int state;
 	int exitcode;
+	char *name;
 	struct pagetable *pagetable;
 	char *kstack;
 	char *kstack_top;
@@ -89,6 +90,12 @@ void process_yield();
 void process_preempt();
 void process_exit(int code, char * extra_info);
 void process_dump( struct process *p );
+void process_dump_current();
+
+static void process_switch(int newstate);
+
+void process_print_all(struct list *q);
+void process_print_all_ready();
 
 void process_wait( struct list *q );
 void process_wakeup( struct list *q );

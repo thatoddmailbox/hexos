@@ -97,6 +97,8 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 
 	clock_init();
 
+	printf("ready to init process!");
+
 	process_init();
 
 	vfs_init();

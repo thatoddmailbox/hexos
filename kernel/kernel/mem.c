@@ -39,8 +39,8 @@ static uint32_t freemap_pages=0;
 static void * alloc_memory_start = (void*) ALLOC_MEMORY_START;
 
 void page_fault(struct regs r) {
-	dbgprint("Page fault\n");
-	panic("Page fault");
+	dbgprint("Unhandled page fault\n");
+	panic("Unhandled page fault");
 }
 
 bool mem_check_avail(multiboot_info_t * mb_info) {
@@ -49,8 +49,8 @@ bool mem_check_avail(multiboot_info_t * mb_info) {
 	multiboot_memory_map_t* mmap = mb_info->mmap_addr;
 	while(mmap < mb_info->mmap_addr + mb_info->mmap_length) {
 		uint32_t end = mmap->base_addr + mmap->length;
-		printf("from %x ", mmap->base_addr);
-		printf("to %x", end);
+		printf("from 0x%x ", mmap->base_addr);
+		printf("to 0x%x", end);
 		printf(" | %d bytes | %d\n", mmap->length, mmap->type);
 
 		if (mmap->type == 1) {
@@ -307,6 +307,7 @@ void pagetable_alloc( struct pagetable *p, unsigned vaddr, unsigned length, int 
 
 struct pagetable * pagetable_load( struct pagetable *p )
 {
+	asm("xchgw %bx, %bx");
 	struct pagetable *oldp;
 	asm("mov %%cr3, %0" : "=r" (oldp));
 	asm("mov %0, %%cr3" :: "r" (p));
@@ -321,9 +322,12 @@ void pagetable_refresh()
 
 void pagetable_enable()
 {
+	printf("pagetable_enable 1\n");
+	asm("xchgw %bx, %bx");
 	asm("movl %cr0, %eax");
 	asm("orl $0x80000000, %eax");
 	asm("movl %eax, %cr0");
+	printf("pagetable_enable 2\n");
 }
 
 void pagetable_copy( struct pagetable *sp, unsigned saddr, struct pagetable *tp, unsigned taddr, unsigned length );

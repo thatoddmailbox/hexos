@@ -75,7 +75,7 @@ dirent * root_readdir(fs_node_t* node, uint32_t num) {
 		}
 	} else if (node->inode == 1) { // mnt dir
 		if (num == 0) {
-			strcpy(dirent_resp.d_name, "cdrom");
+			strcpy(dirent_resp.d_name, "cdrom0");
 			dirent_resp.d_name[6] = 0;
 			dirent_resp.d_ino = 0;
 			return &dirent_resp;
@@ -91,7 +91,7 @@ fs_node_t * root_finddir(fs_node_t * node, char * name) {
 			return &fs_mnt;
 		}
 	} else if (node == &fs_mnt) {
-		if (!strcmp(name, "cdrom")) {
+		if (!strcmp(name, "cdrom0")) {
 			return &fs_cdrom_mnt;
 		}
 	}

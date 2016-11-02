@@ -136,6 +136,29 @@ void shell_runcmd() {
 		printf("%s\n", shell_pwd());
 	} else if (!strcmp(shell_buffer, "mem")) {
 		printf("TODO: this\n");
+	} else if (!strcmp(shell_buffer, "dump")) {
+		process_dump_current();
+	} else if (!strcmp(shell_buffer, "top")) {
+		process_print_all_ready();
+	} else if (!strcmp(shell_buffer, "proctest")) {
+		process_test();
+	} else if (!strcmp(shell_buffer, "memtest")) {
+		*((char*)0x80000000) = 1;
+		*((char*)0x80000001) = 2;
+		*((char*)0x80000002) = 3;
+		/*struct process * p = process_create(128, 128);
+		p->name = "test";
+
+		pagetable_load(current->pagetable);
+		pagetable_enable();*/
+
+		//current->state = PROCESS_STATE_READY;
+		//list_push_tail(&ready_list,&current->node);
+		//\xcd\x80
+
+	} else if (!strcmp(shell_buffer, "exit")) {
+		printf("bye\n");
+		process_exit(0, NULL);
 	} else {
 		printf("Unknown or invalid command!\n");
 		return;

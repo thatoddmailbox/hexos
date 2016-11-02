@@ -35,6 +35,13 @@ static inline int cpuid_string(int code, uint32_t where[4]) {
 
 #define cpuid(in, a, b, c, d) __asm__("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
 
+/*unsigned char cpuid_reverse(unsigned char b) {
+    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    return b;
+}
+
 void printregs(int eax, int ebx, int ecx, int edx) {
 	int j;
 	char string[17];
@@ -45,16 +52,23 @@ void printregs(int eax, int ebx, int ecx, int edx) {
 		string[j + 8] = ecx >> (8 * j);
 		string[j + 12] = edx >> (8 * j);
 	}
-	printf(string);
-}
+	printf("%s\n", string);
+}*/
 
 void cpu_brand_name() {
-	uint32_t name[13]; // allocate space for name
+	char name[17]; // allocate space for name
 	unsigned long eax, ebx, ecx, edx;
 	cpuid(0, eax, ebx, ecx, edx);
 
-	/*printf("CPU Name: ");
-	printregs(eax, ebx, ecx, edx);*/
+	printf("CPUID info: \n");
+    printf("eax: 0x%x\n", eax);
+    printf("ebx: 0x%x\n", ebx);
+    printf("ecx: 0x%x\n", ecx);
+    printf("edx: 0x%x\n", edx);
+    /**name = cpuid_reverse(ebx);
+    name[16] = '\0';
+    printf("%s\n", name);*/
+	//printregs(eax, ebx, ecx, edx);
 
 	//printf(name);
 }
