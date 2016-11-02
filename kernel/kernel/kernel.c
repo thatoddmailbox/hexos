@@ -97,10 +97,13 @@ void kernel_early(unsigned long magic, multiboot_info_t* mb_info, uint32_t initi
 
 	clock_init();
 
-	printf("ready to init process!");
+	paging_init();
 
-	process_init();
+	*((uint32_t *) 0xC00001) = 42; // should page fault
 
+	//process_init();
+
+	printf("dumb stuff is finished\n");
 	vfs_init();
 
 	ata_init();

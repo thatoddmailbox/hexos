@@ -164,6 +164,7 @@ void fault_handler(struct regs *r)
                 terminal_writestring("A critical non-recoverable and non-maskable hardware interrupt has occurred. This may mean that your computer's hardware is defective. If this error occurs multiple times, try isolating the problem by removing and/or replacing components.");
                 while (1) {}
             }
+            printf("Error code: %d\n", r->err_code);
             // Display the description for the Exception that occurred.
             panic(exception_messages[r->int_no]);
             for (;;);

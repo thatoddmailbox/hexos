@@ -14,7 +14,7 @@ bool hasInited = false;
 
 void process_init() {
 	//process_create(0,0);
-	printf("process_init 1\n");
+	/*printf("process_init 1\n");
 	current = process_create(0,0);
 	printf("process_init 2\n");
 
@@ -30,7 +30,7 @@ void process_init() {
 	//list_push_tail(&ready_list,&current->node);
 
 	dbgprint("process: ready\n");
-	hasInited = true;
+	hasInited = true;*/
 }
 
 void process_test() {
@@ -74,7 +74,7 @@ static void process_stack_init(struct process *p) {
 }
 
 struct process * process_create(unsigned code_size, unsigned stack_size) {
-	struct process *p;
+	/*struct process *p;
 
 	p = memory_alloc_page(1);
 
@@ -88,7 +88,8 @@ struct process * process_create(unsigned code_size, unsigned stack_size) {
 
 	process_stack_init(p);
 
-	return p;
+	return p;*/
+	return NULL;
 }
 
 static void process_switch(int newstate) {

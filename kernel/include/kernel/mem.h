@@ -39,15 +39,56 @@ bool mem_init();
 void * memory_alloc_page( bool zeroit );
 void memory_free_page( void *addr );
 
-struct pagetable * pagetable_create();
+// paging structs
+// an entry in the page TABLE
+typedef struct pagetable_entry {
+	unsigned present : 1;
+	unsigned read_write : 1;
+	unsigned usermode_access : 1;
+	unsigned writethrough : 1;
+	unsigned cache_disabled : 1;
+	unsigned accessed : 1;
+	unsigned dirty : 1;
+	unsigned reserved : 1;
+	unsigned global : 1;
+	unsigned extra : 3;
+	unsigned address : 20;
+} __attribute__((packed)) pagetable_entry_t;
+
+typedef struct pagetable {
+	pagetable_entry_t pages[1024];
+} __attribute__((packed)) pagetable_t;
+
+// an entry in the page DIRECTORY
+typedef struct pagedirectory_entry {
+	unsigned present : 1;
+	unsigned read_write : 1;
+	unsigned usermode_access : 1;
+	unsigned writethrough : 1;
+	unsigned cache_disabled : 1;
+	unsigned accessed : 1;
+	unsigned reserved : 1;
+	unsigned page_size : 1;
+	unsigned reserved2 : 1;
+	unsigned extra : 3;
+	unsigned address : 20;
+} __attribute__((packed)) pagedirectory_entry_t;
+
+typedef struct pagedirectory {
+	pagedirectory_entry_t pages[1024];
+} __attribute__((packed)) pagedirectory_t;
+
+/*struct pagetable * pagetable_create();
 void pagetable_init( struct pagetable *p );
 int  pagetable_map( struct pagetable *p, unsigned vaddr, unsigned paddr, int flags );
 int  pagetable_getmap( struct pagetable *p, unsigned vaddr, unsigned *paddr );
 void pagetable_unmap( struct pagetable *p, unsigned vaddr );
 void pagetable_alloc( struct pagetable *p, unsigned vaddr, unsigned length, int flags );
-void pagetable_delete( struct pagetable *p );
-struct pagetable * pagetable_load( struct pagetable *p );
-void pagetable_enable();
-void pagetable_refresh();
+void pagetable_delete( struct pagetable *p );*/
+void paging_init();
+
+pagedirectory_t * paging_load_directory(pagedirectory_t *p);
+void paging_enable();
+void paging_refresh();
 
 #endif
